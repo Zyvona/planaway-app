@@ -11,7 +11,18 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // 1. Updated Interface to match your SQL exactly
 export interface Trip {
-  // ... previous fields
+  id?: string;
+  user_id?: string;
+  origin: string;
+  destination: string;
+  budget_limit: number;    // Changed from budget
+  duration_days: number;   // Changed from days
+  budget_level?: string;
+  itinerary_data?: any;
+  budget_data?: any;
+  safety_data?: any;
+  market_note?: string;    // New field
+  created_at?: string;
   itinerary_data: {
     day: number;
     activities: {
