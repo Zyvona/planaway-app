@@ -268,7 +268,61 @@ const ResultsTabs = ({ origin, destination, budget, days, onDataUpdate }: Result
           <div className="h-2 w-2 rotate-45 bg-accent" />
           <div className="flex-1 h-px bg-border" />
         </div>
-        <SkeletonBlock />
+
+        {budgetData?.booking_link && (
+          <a
+            href={budgetData.booking_link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 mb-4 px-4 py-2.5 text-sm font-heading font-bold rounded-lg transition-colors"
+            style={{
+              backgroundColor: '#1A3A5C',
+              color: 'white',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#0f2844';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#1A3A5C';
+            }}
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+            Book Flight
+          </a>
+        )}
+
+        {!budgetData ? (
+          <SkeletonBlock />
+        ) : (
+          <div className="space-y-4">
+            {budgetData.categories?.map((category: any, index: number) => (
+              <div key={index} className="rounded-xl border border-border bg-card p-4 shadow-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-heading font-semibold text-foreground">
+                    {category.name}
+                  </span>
+                  <span className="text-sm font-heading font-bold text-accent">
+                    ${category.amount.toFixed(0)}
+                  </span>
+                </div>
+              </div>
+            ))}
+            {budgetData.flight_estimate && (
+              <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-heading font-semibold text-foreground">
+                    Flight Estimate
+                  </span>
+                  <span className="text-sm font-heading font-bold text-accent">
+                    ${budgetData.flight_estimate}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </TabsContent>
 
       <TabsContent value="safety" className="flex-1 p-5 mt-0">

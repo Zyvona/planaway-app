@@ -55,7 +55,7 @@ Update ONLY the itinerary_data section to match the selected vibes: ${vibesList}
 
 Each activity MUST include:
 - Real-world location name
-- map_link using https://www.google.com/maps/search/?api=1&query=[Location+Name+${destination}]
+- map_link using https://www.google.com/maps/search/?api=1&query=[Location+Name] (encode spaces as +)
 - vibe_chips array matching selected vibes
 - intensity_score (1-10)
 

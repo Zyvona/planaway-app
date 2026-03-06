@@ -38,9 +38,9 @@ The Mission: Generate a trip from ${origin} to ${destination} for ${duration_day
 
 Constraints for Data Integrity:
 
-1. Itinerary: Each activity MUST include a real-world location name. Include a map_link using https://www.google.com/maps/search/?api=1&query=[Location+Name+${destination}].
+1. Itinerary: Each activity MUST include a real-world location name. Include a map_link using https://www.google.com/maps/search/?api=1&query=[Location+Name] (encode spaces as +).
 
-2. Flights: Provide a flight_estimate based on current ${currentYear} market averages for this route (${origin} to ${destination}). Include a booking_link to https://www.google.com/travel/flights?q=Flights+to+${destination}.
+2. Flights: Provide a flight_estimate based on current ${currentYear} market averages for this route (${origin} to ${destination}). Include a booking_link to https://www.google.com/travel/flights?q=flights+from+${origin.replace(/\s/g, '+')}+to+${destination.replace(/\s/g, '+')}.
 
 3. Smart Features: Include vibe_chips (e.g., 'Hidden Gem', 'Crowd-Free', 'Cultural', 'Adventure', 'Relaxation', 'Foodie') and intensity_score (1-10 scale).
 
@@ -87,7 +87,7 @@ Output Structure (Raw JSON only):
       "balanced": { "total": 0, "accommodation": 0, "food": 0, "activities": 0 },
       "luxury": { "total": 0, "accommodation": 0, "food": 0, "activities": 0 }
     },
-    "booking_link": "https://www.google.com/travel/flights?q=Flights+to+${encodeURIComponent(destination)}",
+    "booking_link": "https://www.google.com/travel/flights?q=flights+from+${origin.replace(/\s/g, '+')}+to+${destination.replace(/\s/g, '+')}",
     "categories": [
       { "name": "Accommodation", "amount": ${parseFloat(budget) * 0.4} },
       { "name": "Food", "amount": ${parseFloat(budget) * 0.3} },

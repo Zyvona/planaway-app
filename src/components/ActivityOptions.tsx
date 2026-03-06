@@ -1,12 +1,18 @@
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { Check, MapPin } from "lucide-react";
 
 export interface ActivityOption {
   id: string;
   title: string;
-  description: string;
+  description?: string;
+  desc?: string;
   duration?: string;
   cost?: string;
+  time?: string;
+  location?: string;
+  map_link?: string;
+  vibe_chips?: string[];
+  intensity_score?: number;
 }
 
 interface ActivityOptionsProps {
@@ -59,9 +65,9 @@ const ActivityOptions = ({ options, selectedOptionId, onSelect, dayNumber }: Act
                     {option.title}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    {option.description}
+                    {option.description || option.desc}
                   </p>
-                  {(option.duration || option.cost) && (
+                  {(option.duration || option.cost || option.location) && (
                     <div className="flex items-center gap-2 mt-1.5">
                       {option.duration && (
                         <span className="text-xs text-muted-foreground/80">
@@ -73,7 +79,35 @@ const ActivityOptions = ({ options, selectedOptionId, onSelect, dayNumber }: Act
                           💰 {option.cost}
                         </span>
                       )}
+                      {option.location && (
+                        <span className="text-xs text-muted-foreground/80 flex items-center gap-1">
+                          <MapPin className="h-3 w-3" />
+                          {option.location}
+                        </span>
+                      )}
                     </div>
+                  )}
+                  {option.map_link && (
+                    <a
+                      href={option.map_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="inline-flex items-center gap-1 mt-2 px-2.5 py-1 text-xs font-heading font-semibold rounded-md transition-colors"
+                      style={{
+                        backgroundColor: '#1A3A5C',
+                        color: 'white',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#0f2844';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#1A3A5C';
+                      }}
+                    >
+                      <MapPin className="h-3 w-3" />
+                      View on Maps
+                    </a>
                   )}
                 </div>
               </div>
