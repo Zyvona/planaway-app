@@ -33,6 +33,31 @@ const MyExpeditions = () => {
     });
   };
 
+  const handleTripClick = (trip: Trip) => {
+    navigate("/results", {
+      state: {
+        origin: trip.origin,
+        destination: trip.destination,
+        budget: trip.budget_limit.toString(),
+        days: trip.duration_days.toString(),
+        originCoords: trip.origin_lat && trip.origin_lng
+          ? { lat: trip.origin_lat, lng: trip.origin_lng }
+          : undefined,
+        destinationCoords: trip.destination_lat && trip.destination_lng
+          ? { lat: trip.destination_lat, lng: trip.destination_lng }
+          : undefined,
+        loadedTripData: {
+          itinerary_data: trip.itinerary_data,
+          budget_data: trip.budget_data,
+          safety_data: trip.safety_data,
+          selected_vibes: trip.selected_vibes,
+          activity_selections: trip.activity_selections,
+          market_note: trip.market_note,
+        },
+      },
+    });
+  };
+
   return (
     <div
       className="relative flex min-h-screen flex-col"
@@ -125,7 +150,10 @@ const MyExpeditions = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-primary/30">
+                  <Card
+                    onClick={() => handleTripClick(trip)}
+                    className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-primary/30"
+                  >
                     <CardContent className="p-5">
                       <div className="flex items-start gap-2 mb-3">
                         <MapPin className="h-4 w-4 text-primary mt-0.5 shrink-0" />
@@ -144,14 +172,11 @@ const MyExpeditions = () => {
                       <div className="space-y-2 text-xs text-muted-foreground">
                         <div className="flex items-center gap-2">
                           <Calendar className="h-3.5 w-3.5" />
-                          <span>{trip.days} days</span>
+                          <span>{trip.duration_days} days</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <DollarSign className="h-3.5 w-3.5" />
-                          <span>${trip.budget.toLocaleString()}</span>
-                          <span className="ml-auto px-2 py-0.5 rounded-full bg-accent/10 text-accent font-semibold">
-                            {trip.budget_level}
-                          </span>
+                          <span>${trip.budget_limit.toLocaleString()}</span>
                         </div>
                         {trip.created_at && (
                           <div className="text-xs text-muted-foreground/60 mt-3 pt-3 border-t border-border">
