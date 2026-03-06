@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { MapPin, Plane, DollarSign, CalendarDays, Compass, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PlacesAutocomplete from "@/components/PlacesAutocomplete";
+import { sanitizeInput } from "@/lib/sanitize";
 import heroBg from "@/assets/hero-bg.jpg";
 
 interface OnboardingFormProps {
@@ -15,9 +16,10 @@ interface OnboardingFormProps {
     originCoords?: { lat: number; lng: number };
     destinationCoords?: { lat: number; lng: number };
   }) => void;
+  isLoading?: boolean;
 }
 
-const OnboardingForm = ({ onSubmit }: OnboardingFormProps) => {
+const OnboardingForm = ({ onSubmit, isLoading = false }: OnboardingFormProps) => {
   const navigate = useNavigate();
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
@@ -28,10 +30,10 @@ const OnboardingForm = ({ onSubmit }: OnboardingFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (origin && destination && budget && days) {
+    if (origin && destination && budget && days && !isLoading) {
       onSubmit({
-        origin,
-        destination,
+        origin: sanitizeInput(origin),
+        destination: sanitizeInput(destination),
         budget,
         days,
         originCoords,
@@ -40,7 +42,7 @@ const OnboardingForm = ({ onSubmit }: OnboardingFormProps) => {
     }
   };
 
-  const isValid = origin && destination && budget && days;
+  const isValid = origin && destination && budget && days && !isLoading;
 
   return (
     <div
@@ -185,8 +187,17 @@ const OnboardingForm = ({ onSubmit }: OnboardingFormProps) => {
               disabled={!isValid}
               className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none"
             >
-              <Plane className="h-5 w-5" />
-              Plan My Trip
+              {isLoading ? (
+                <>
+                  <div className="h-5 w-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                  Planning Your Trip...
+                </>
+              ) : (
+                <>
+                  <Plane className="h-5 w-5" />
+                  Plan My Trip
+                </>
+              )}
             </Button>
           </div>
         </form>

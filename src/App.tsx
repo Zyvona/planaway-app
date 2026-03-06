@@ -7,24 +7,34 @@ import Index from "./pages/Index";
 import Results from "./pages/Results";
 import MyExpeditions from "./pages/MyExpeditions";
 import NotFound from "./pages/NotFound";
+import EnvErrorDisplay from "@/components/EnvErrorDisplay";
+import { checkRequiredEnvVars } from "@/lib/env-check";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/results" element={<Results />} />
-          <Route path="/my-expeditions" element={<MyExpeditions />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const envCheck = checkRequiredEnvVars();
+
+  if (!envCheck.isValid) {
+    return <EnvErrorDisplay missingVars={envCheck.missingVars} />;
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/results" element={<Results />} />
+            <Route path="/my-expeditions" element={<MyExpeditions />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
