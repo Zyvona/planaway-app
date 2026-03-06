@@ -6,14 +6,11 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-interface RefineRequest {
-  currentItinerary: any;
-  selectedVibes: string[];
-  budget: string;
+interface GenerateTripRequest {
+  origin: string;
   destination: string;
-  origin?: string;
-  days?: string;
-  previousData?: any;
+  budget: string;
+  days: string;
 }
 
 Deno.serve(async (req: Request) => {
@@ -25,7 +22,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { currentItinerary, selectedVibes, budget, destination, origin, days, previousData }: RefineRequest = await req.json();
+    const { origin, destination, budget, days }: GenerateTripRequest = await req.json();
 
     const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
     if (!geminiApiKey) {
@@ -33,33 +30,23 @@ Deno.serve(async (req: Request) => {
     }
 
     const currentYear = new Date().getFullYear();
-    const vibesList = selectedVibes.join(", ");
+    const duration_days = parseInt(days);
 
     const prompt = `System Role: You are a real-time travel data engine. You provide accurate, non-hallucinated data for ${currentYear}.
 
-Handling User Options: The user has modified their preferences to prioritize these vibes: ${vibesList}.
+The Mission: Generate a trip from ${origin} to ${destination} for ${duration_days} days.
 
-Use the previous JSON as context and update the relevant sections to ensure consistency:
+Constraints for Data Integrity:
 
-Previous Data:
-${JSON.stringify(previousData || currentItinerary, null, 2)}
+1. Itinerary: Each activity MUST include a real-world location name. Include a map_link using https://www.google.com/maps/search/?api=1&query=[Location+Name+${destination}].
 
-Budget: $${budget}
-Destination: ${destination}
-${origin ? `Origin: ${origin}` : ''}
-${days ? `Duration: ${days} days` : ''}
+2. Flights: Provide a flight_estimate based on current ${currentYear} market averages for this route (${origin} to ${destination}). Include a booking_link to https://www.google.com/travel/flights?q=Flights+to+${destination}.
 
-Update ONLY the itinerary_data section to match the selected vibes: ${vibesList}. For each day, provide TWO activity options:
-- Option A should focus on the selected vibes
-- Option B should offer an alternative that still aligns with at least one of the vibes
+3. Smart Features: Include vibe_chips (e.g., 'Hidden Gem', 'Crowd-Free', 'Cultural', 'Adventure', 'Relaxation', 'Foodie') and intensity_score (1-10 scale).
 
-Each activity MUST include:
-- Real-world location name
-- map_link using https://www.google.com/maps/search/?api=1&query=[Location+Name+${destination}]
-- vibe_chips array matching selected vibes
-- intensity_score (1-10)
+4. Value Optimizer: Provide a tier_comparison object with specific price points for Economy, Balanced, and Luxury tiers.
 
-Return ONLY the updated itinerary_data structure:
+Output Structure (Raw JSON only):
 {
   "itinerary_data": [
     {
@@ -74,7 +61,7 @@ Return ONLY the updated itinerary_data structure:
           "map_link": "https://www.google.com/maps/search/?api=1&query=...",
           "duration": "2-3 hours",
           "cost": "$20-40",
-          "vibe_chips": ["${vibesList.split(", ")[0]}"],
+          "vibe_chips": ["Hidden Gem", "Cultural"],
           "intensity_score": 5
         },
         {
@@ -91,10 +78,39 @@ Return ONLY the updated itinerary_data structure:
         }
       ]
     }
-  ]
+  ],
+  "budget_data": {
+    "flight_estimate": 450,
+    "daily_allowance": ${Math.round(parseFloat(budget) / duration_days)},
+    "tier_comparison": {
+      "economy": { "total": 0, "accommodation": 0, "food": 0, "activities": 0 },
+      "balanced": { "total": 0, "accommodation": 0, "food": 0, "activities": 0 },
+      "luxury": { "total": 0, "accommodation": 0, "food": 0, "activities": 0 }
+    },
+    "booking_link": "https://www.google.com/travel/flights?q=Flights+to+${encodeURIComponent(destination)}",
+    "categories": [
+      { "name": "Accommodation", "amount": ${parseFloat(budget) * 0.4} },
+      { "name": "Food", "amount": ${parseFloat(budget) * 0.3} },
+      { "name": "Activities", "amount": ${parseFloat(budget) * 0.2} },
+      { "name": "Transport", "amount": ${parseFloat(budget) * 0.1} }
+    ]
+  },
+  "safety_data": {
+    "score": 7,
+    "emergency_contacts": [
+      { "service": "Emergency", "number": "911" },
+      { "service": "US Embassy", "number": "+1-xxx-xxx-xxxx" }
+    ],
+    "tips": [
+      "Keep copies of important documents",
+      "Share your itinerary with someone",
+      "Stay aware of your surroundings"
+    ]
+  },
+  "market_note": "Prices reflect ${currentYear} market averages for ${destination}. Book early for best rates."
 }
 
-Make the activities specific to ${destination}, realistic for ${currentYear}, and aligned with the vibes: ${vibesList}.`;
+Generate realistic ${currentYear} data for ${destination}. Each day should have 2 activity options. Make activities specific and include real locations.`;
 
     const geminiResponse = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${geminiApiKey}`,
@@ -124,7 +140,8 @@ Make the activities specific to ${destination}, realistic for ${currentYear}, an
     );
 
     if (!geminiResponse.ok) {
-      throw new Error(`Gemini API error: ${geminiResponse.statusText}`);
+      const errorText = await geminiResponse.text();
+      throw new Error(`Gemini API error: ${geminiResponse.statusText} - ${errorText}`);
     }
 
     const geminiData = await geminiResponse.json();
@@ -135,16 +152,16 @@ Make the activities specific to ${destination}, realistic for ${currentYear}, an
       throw new Error("Failed to parse AI response");
     }
 
-    const refinedData = JSON.parse(jsonMatch[0]);
+    const tripData = JSON.parse(jsonMatch[0]);
 
-    return new Response(JSON.stringify({ success: true, data: refinedData }), {
+    return new Response(JSON.stringify({ success: true, data: tripData }), {
       headers: {
         ...corsHeaders,
         "Content-Type": "application/json",
       },
     });
   } catch (error) {
-    console.error("Error refining itinerary:", error);
+    console.error("Error generating trip:", error);
     return new Response(
       JSON.stringify({
         success: false,
