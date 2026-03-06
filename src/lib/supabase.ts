@@ -11,18 +11,20 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // 1. Updated Interface to match your SQL exactly
 export interface Trip {
-  id?: string;
-  user_id?: string;
-  origin: string;
-  destination: string;
-  budget_limit: number;    // Changed from budget
-  duration_days: number;   // Changed from days
-  budget_level?: string;
-  itinerary_data?: any;
-  budget_data?: any;
-  safety_data?: any;
-  market_note?: string;    // New field
-  created_at?: string;
+  // ... previous fields
+  itinerary_data: {
+    day: number;
+    activities: {
+      time: string;
+      description: string;
+      map_link: string; // Crucial for "Real" feeling
+    }[];
+  }[];
+  budget_data: {
+    flight_estimate: number;
+    booking_link: string; // Crucial for "Real" feeling
+    tier_comparison: any;
+  };
 }
 
 // 2. Secured Save Function
