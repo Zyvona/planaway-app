@@ -1,11 +1,22 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Plane, DollarSign, CalendarDays, Compass } from "lucide-react";
+import { MapPin, Plane, DollarSign, CalendarDays, Compass, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import PlacesAutocomplete from "@/components/PlacesAutocomplete";
 import heroBg from "@/assets/hero-bg.jpg";
 
+type BudgetLevel = "Economy" | "Standard" | "Luxury";
+
 interface OnboardingFormProps {
-  onSubmit: (data: { origin: string; destination: string; budget: string; days: string }) => void;
+  onSubmit: (data: {
+    origin: string;
+    destination: string;
+    budget: string;
+    days: string;
+    budget_level: BudgetLevel;
+    originCoords?: { lat: number; lng: number };
+    destinationCoords?: { lat: number; lng: number };
+  }) => void;
 }
 
 const OnboardingForm = ({ onSubmit }: OnboardingFormProps) => {
@@ -13,15 +24,26 @@ const OnboardingForm = ({ onSubmit }: OnboardingFormProps) => {
   const [destination, setDestination] = useState("");
   const [budget, setBudget] = useState("");
   const [days, setDays] = useState("");
+  const [budgetLevel, setBudgetLevel] = useState<BudgetLevel>("Standard");
+  const [originCoords, setOriginCoords] = useState<{ lat: number; lng: number } | undefined>();
+  const [destinationCoords, setDestinationCoords] = useState<{ lat: number; lng: number } | undefined>();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (origin && destination && budget && days) {
-      onSubmit({ origin, destination, budget, days });
+    if (origin && destination && budget && days && budgetLevel) {
+      onSubmit({
+        origin,
+        destination,
+        budget,
+        days,
+        budget_level: budgetLevel,
+        originCoords,
+        destinationCoords,
+      });
     }
   };
 
-  const isValid = origin && destination && budget && days;
+  const isValid = origin && destination && budget && days && budgetLevel;
 
   return (
     <div
@@ -87,13 +109,15 @@ const OnboardingForm = ({ onSubmit }: OnboardingFormProps) => {
             <label className="text-xs font-heading font-bold uppercase tracking-wider text-foreground mb-3 block">
               Origin City
             </label>
-            <div className="flex items-center gap-3 border-b-2 border-primary/20 pb-2 focus-within:border-primary transition-colors">
-              <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
-              <input
-                type="text"
-                placeholder="Where are you departing from?"
+            <div className="border-b-2 border-primary/20 pb-2 focus-within:border-primary transition-colors">
+              <PlacesAutocomplete
                 value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
+                onChange={setOrigin}
+                onPlaceSelect={(place) => {
+                  setOriginCoords({ lat: place.lat, lng: place.lng });
+                }}
+                placeholder="Where are you departing from?"
+                icon={<MapPin className="h-4 w-4 text-muted-foreground" />}
                 className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/50 outline-none font-body"
               />
             </div>
@@ -104,13 +128,15 @@ const OnboardingForm = ({ onSubmit }: OnboardingFormProps) => {
             <label className="text-xs font-heading font-bold uppercase tracking-wider text-foreground mb-3 block">
               Destination City
             </label>
-            <div className="flex items-center gap-3 border-b-2 border-primary/20 pb-2 focus-within:border-secondary transition-colors">
-              <Plane className="h-4 w-4 text-muted-foreground shrink-0" />
-              <input
-                type="text"
-                placeholder="Where do you want to go?"
+            <div className="border-b-2 border-primary/20 pb-2 focus-within:border-secondary transition-colors">
+              <PlacesAutocomplete
                 value={destination}
-                onChange={(e) => setDestination(e.target.value)}
+                onChange={setDestination}
+                onPlaceSelect={(place) => {
+                  setDestinationCoords({ lat: place.lat, lng: place.lng });
+                }}
+                placeholder="Where do you want to go?"
+                icon={<Plane className="h-4 w-4 text-muted-foreground" />}
                 className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/50 outline-none font-body"
               />
             </div>
@@ -147,6 +173,32 @@ const OnboardingForm = ({ onSubmit }: OnboardingFormProps) => {
                 onChange={(e) => setDays(e.target.value)}
                 className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/50 outline-none font-body"
               />
+            </div>
+          </div>
+
+          {/* Budget Level */}
+          <div>
+            <label className="text-xs font-heading font-bold uppercase tracking-wider text-foreground mb-3 block">
+              Budget Level
+            </label>
+            <div className="flex items-center gap-3 border-b-2 border-primary/20 pb-2">
+              <Sparkles className="h-4 w-4 text-muted-foreground shrink-0" />
+              <div className="flex gap-2 w-full">
+                {(["Economy", "Standard", "Luxury"] as BudgetLevel[]).map((level) => (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => setBudgetLevel(level)}
+                    className={`flex-1 py-2 px-3 rounded-lg text-xs font-heading font-semibold transition-all ${
+                      budgetLevel === level
+                        ? "bg-primary text-primary-foreground shadow-md"
+                        : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                    }`}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

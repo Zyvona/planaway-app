@@ -4,10 +4,20 @@ import { ArrowLeft, MapPin, Plane, Compass } from "lucide-react";
 import ResultsTabs from "@/components/ResultsTabs";
 import heroBg from "@/assets/hero-bg.jpg";
 
+type BudgetLevel = "Economy" | "Standard" | "Luxury";
+
 const Results = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const data = location.state as { origin: string; destination: string; budget: string; days: string } | null;
+  const data = location.state as {
+    origin: string;
+    destination: string;
+    budget: string;
+    days: string;
+    budget_level: BudgetLevel;
+    originCoords?: { lat: number; lng: number };
+    destinationCoords?: { lat: number; lng: number };
+  } | null;
 
   if (!data) {
     navigate("/");
@@ -67,6 +77,8 @@ const Results = () => {
             <span className="text-xs text-primary-foreground/60">{data.days} days</span>
             <span className="h-1 w-1 rounded-full bg-primary-foreground/30" />
             <span className="text-xs text-primary-foreground/60">${Number(data.budget).toLocaleString()} budget</span>
+            <span className="h-1 w-1 rounded-full bg-primary-foreground/30" />
+            <span className="text-xs text-accent font-semibold">{data.budget_level}</span>
           </div>
         </div>
       </motion.div>
