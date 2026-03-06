@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarDays, DollarSign, ShieldCheck } from "lucide-react";
+import { CalendarDays, DollarSign, ShieldCheck, Sparkles } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import VibeChips from "@/components/VibeChips";
+import ActivityOptions, { ActivityOption } from "@/components/ActivityOptions";
+import { toast } from "sonner";
 
 interface ResultsTabsProps {
   origin: string;
   destination: string;
   budget: string;
   days: string;
-  onDataUpdate: (data: { itinerary?: any; budget?: any; safety?: any }) => void;
+  onDataUpdate: (data: {
+    itinerary?: any;
+    budget?: any;
+    safety?: any;
+    selectedVibes?: string[];
+    activitySelections?: Record<number, string>;
+  }) => void;
 }
 
 const SkeletonCard = ({ lines = 3 }: { lines?: number }) => (
@@ -31,12 +40,30 @@ const ResultsTabs = ({ origin, destination, budget, days, onDataUpdate }: Result
   const [itineraryData, setItineraryData] = useState<any>(null);
   const [budgetData, setBudgetData] = useState<any>(null);
   const [safetyData, setSafetyData] = useState<any>(null);
+  const [selectedVibes, setSelectedVibes] = useState<string[]>([]);
+  const [activitySelections, setActivitySelections] = useState<Record<number, string>>({});
+  const [isRefining, setIsRefining] = useState(false);
 
   useEffect(() => {
     const mockItinerary = {
       days: Array.from({ length: parseInt(days) }, (_, i) => ({
         day: i + 1,
-        activities: [`Explore ${destination}`, "Local dining", "Evening relaxation"],
+        activities: [
+          {
+            id: `day${i + 1}-option-a`,
+            title: `Explore ${destination}`,
+            description: "Discover the main attractions and hidden gems",
+            duration: "3-4 hours",
+            cost: "$30-50",
+          },
+          {
+            id: `day${i + 1}-option-b`,
+            title: "Local dining experience",
+            description: "Taste authentic local cuisine",
+            duration: "2-3 hours",
+            cost: "$20-40",
+          },
+        ],
       })),
     };
     const mockBudget = {
@@ -58,8 +85,101 @@ const ResultsTabs = ({ origin, destination, budget, days, onDataUpdate }: Result
     setItineraryData(mockItinerary);
     setBudgetData(mockBudget);
     setSafetyData(mockSafety);
-    onDataUpdate({ itinerary: mockItinerary, budget: mockBudget, safety: mockSafety });
+
+    const initialSelections: Record<number, string> = {};
+    mockItinerary.days.forEach((day: any) => {
+      initialSelections[day.day] = day.activities[0].id;
+    });
+    setActivitySelections(initialSelections);
+
+    onDataUpdate({
+      itinerary: mockItinerary,
+      budget: mockBudget,
+      safety: mockSafety,
+      selectedVibes: [],
+      activitySelections: initialSelections,
+    });
   }, [origin, destination, budget, days, onDataUpdate]);
+
+  const handleVibeToggle = async (vibeId: string) => {
+    const newSelectedVibes = selectedVibes.includes(vibeId)
+      ? selectedVibes.filter((v) => v !== vibeId)
+      : [...selectedVibes, vibeId];
+
+    setSelectedVibes(newSelectedVibes);
+
+    if (newSelectedVibes.length > 0) {
+      await refineItinerary(newSelectedVibes);
+    }
+  };
+
+  const refineItinerary = async (vibes: string[]) => {
+    setIsRefining(true);
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/refine-itinerary`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${supabaseAnonKey}`,
+        },
+        body: JSON.stringify({
+          currentItinerary: itineraryData,
+          selectedVibes: vibes,
+          budget,
+          destination,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to refine itinerary");
+      }
+
+      const data = await response.json();
+      if (data.success && data.itinerary) {
+        setItineraryData(data.itinerary);
+
+        const newSelections: Record<number, string> = {};
+        data.itinerary.days.forEach((day: any) => {
+          newSelections[day.day] = day.activities[0].id;
+        });
+        setActivitySelections(newSelections);
+
+        onDataUpdate({
+          itinerary: data.itinerary,
+          budget: budgetData,
+          safety: safetyData,
+          selectedVibes: vibes,
+          activitySelections: newSelections,
+        });
+
+        toast.success("Itinerary refined to match your vibes!");
+      }
+    } catch (error) {
+      console.error("Error refining itinerary:", error);
+      toast.error("Failed to refine itinerary. Please try again.");
+    } finally {
+      setIsRefining(false);
+    }
+  };
+
+  const handleActivitySelection = (dayNumber: number, optionId: string) => {
+    const newSelections = {
+      ...activitySelections,
+      [dayNumber]: optionId,
+    };
+    setActivitySelections(newSelections);
+
+    onDataUpdate({
+      itinerary: itineraryData,
+      budget: budgetData,
+      safety: safetyData,
+      selectedVibes,
+      activitySelections: newSelections,
+    });
+  };
 
   return (
     <Tabs defaultValue="itinerary" className="flex flex-col h-full">
@@ -87,15 +207,57 @@ const ResultsTabs = ({ origin, destination, budget, days, onDataUpdate }: Result
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="itinerary" className="flex-1 p-5 mt-0">
+      <TabsContent value="itinerary" className="flex-1 p-5 mt-0 overflow-y-auto">
         <h3 className="font-heading font-bold text-foreground mb-0.5">Daily Itinerary</h3>
         <p className="text-muted-foreground text-xs mb-5">Your personalized day-by-day plan</p>
+
+        <VibeChips
+          selectedVibes={selectedVibes}
+          onVibeToggle={handleVibeToggle}
+          isRefining={isRefining}
+        />
+
+        {isRefining && (
+          <div className="flex items-center gap-2 mb-4 text-secondary text-sm font-heading">
+            <Sparkles className="h-4 w-4 animate-pulse" />
+            <span>Refining your itinerary...</span>
+          </div>
+        )}
+
         <div className="flex items-center gap-2 mb-4">
           <div className="flex-1 h-px bg-border" />
           <div className="h-2 w-2 rotate-45 bg-accent" />
           <div className="flex-1 h-px bg-border" />
         </div>
-        <SkeletonBlock />
+
+        {!itineraryData ? (
+          <SkeletonBlock />
+        ) : (
+          <div className="space-y-4">
+            {itineraryData.days.map((day: any) => (
+              <div
+                key={day.day}
+                className="rounded-xl border border-border bg-card p-4 shadow-sm"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center">
+                    <span className="text-sm font-heading font-bold text-secondary-foreground">
+                      {day.day}
+                    </span>
+                  </div>
+                  <h4 className="font-heading font-bold text-foreground">Day {day.day}</h4>
+                </div>
+
+                <ActivityOptions
+                  options={day.activities}
+                  selectedOptionId={activitySelections[day.day] || day.activities[0]?.id}
+                  onSelect={(optionId) => handleActivitySelection(day.day, optionId)}
+                  dayNumber={day.day}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </TabsContent>
 
       <TabsContent value="budget" className="flex-1 p-5 mt-0">

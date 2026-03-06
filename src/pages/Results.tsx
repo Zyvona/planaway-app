@@ -16,6 +16,8 @@ const Results = () => {
     itinerary?: any;
     budget?: any;
     safety?: any;
+    selectedVibes?: string[];
+    activitySelections?: Record<number, string>;
   }>({});
 
   const data = location.state as {
@@ -47,6 +49,8 @@ const Results = () => {
         itinerary_data: tripData.itinerary,
         budget_data: tripData.budget,
         safety_data: tripData.safety,
+        selected_vibes: tripData.selectedVibes || [],
+        activity_selections: tripData.activitySelections || {},
       });
 
       if (error) throw error;
