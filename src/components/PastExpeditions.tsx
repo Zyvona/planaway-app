@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { getTrips } from "@/lib/supabase";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, DollarSign, ExternalLink } from "lucide-react";
@@ -10,14 +10,15 @@ interface Trip {
   id: string;
   origin: string;
   destination: string;
-  budget: number;
-  days: number;
+  budget_limit: number;
+  duration_days: number;
   created_at: string;
   itinerary_data: any;
   budget_data: any;
   safety_data: any;
   selected_vibes: string[];
   activity_selections: Record<number, string>;
+  market_note?: string;
   origin_lat?: number;
   origin_lng?: number;
   destination_lat?: number;
@@ -32,14 +33,8 @@ export default function PastExpeditions() {
   useEffect(() => {
     const fetchTrips = async () => {
       try {
-        const { data, error } = await supabase
-          .from("trips")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(5);
-
-        if (error) throw error;
-        setTrips(data || []);
+        const data = await getTrips();
+        setTrips(data.slice(0, 5));
       } catch (error) {
         console.error("Error fetching trips:", error);
         toast.error("Failed to load past expeditions");
@@ -56,8 +51,8 @@ export default function PastExpeditions() {
       state: {
         origin: trip.origin,
         destination: trip.destination,
-        budget: trip.budget.toString(),
-        days: trip.days.toString(),
+        budget: trip.budget_limit.toString(),
+        days: trip.duration_days.toString(),
         originCoords: trip.origin_lat && trip.origin_lng
           ? { lat: trip.origin_lat, lng: trip.origin_lng }
           : undefined,
@@ -70,6 +65,7 @@ export default function PastExpeditions() {
           safety_data: trip.safety_data,
           selected_vibes: trip.selected_vibes,
           activity_selections: trip.activity_selections,
+          market_note: trip.market_note,
         },
       },
     });
@@ -109,11 +105,11 @@ export default function PastExpeditions() {
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
-                    {trip.days} days
+                    {trip.duration_days} days
                   </span>
                   <span className="flex items-center gap-1">
                     <DollarSign className="h-3 w-3" />
-                    ${trip.budget.toLocaleString()}
+                    ${trip.budget_limit.toLocaleString()}
                   </span>
                   <span>
                     {new Date(trip.created_at).toLocaleDateString()}

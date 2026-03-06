@@ -9,48 +9,38 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// 1. Updated Interface to match your SQL exactly
 export interface Trip {
   id?: string;
   user_id?: string;
   origin: string;
   destination: string;
-  budget_limit: number;    // Changed from budget
-  duration_days: number;   // Changed from days
-  budget_level?: string;
+  budget_limit: number;
+  duration_days: number;
+  origin_lat?: number;
+  origin_lng?: number;
+  destination_lat?: number;
+  destination_lng?: number;
   itinerary_data?: any;
   budget_data?: any;
   safety_data?: any;
-  market_note?: string;    // New field
+  selected_vibes?: string[];
+  activity_selections?: Record<number, string>;
+  market_note?: string;
   created_at?: string;
-  itinerary_data: {
-    day: number;
-    activities: {
-      time: string;
-      description: string;
-      map_link: string; // Crucial for "Real" feeling
-    }[];
-  }[];
-  budget_data: {
-    flight_estimate: number;
-    booking_link: string; // Crucial for "Real" feeling
-    tier_comparison: any;
-  };
 }
 
-// 2. Secured Save Function
-export async function saveTrip(tripData: Trip): Promise<Trip | null> {
+export async function saveTrip(tripData: Partial<Trip>): Promise<Trip | null> {
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) {
+    console.error("No authenticated user");
+    return null;
+  }
 
   const { data, error } = await supabase
     .from("trips")
     .insert({
       ...tripData,
       user_id: user.id,
-      // Ensure we map the local UI state names to DB names if they differ
-      budget_limit: tripData.budget_limit,
-      duration_days: tripData.duration_days
     })
     .select()
     .maybeSingle();
@@ -62,15 +52,17 @@ export async function saveTrip(tripData: Trip): Promise<Trip | null> {
   return data;
 }
 
-// 3. Secured Fetch Function
 export async function getTrips(): Promise<Trip[]> {
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
+  if (!user) {
+    console.error("No authenticated user");
+    return [];
+  }
 
   const { data, error } = await supabase
     .from("trips")
     .select("*")
-    .eq('user_id', user.id) // Security: only see your own expeditions
+    .eq('user_id', user.id)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -78,4 +70,30 @@ export async function getTrips(): Promise<Trip[]> {
     return [];
   }
   return data || [];
+}
+
+export async function getCurrentUser() {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user;
+}
+
+export async function signInWithGoogle() {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin,
+    },
+  });
+  if (error) {
+    console.error("Error signing in:", error);
+    throw error;
+  }
+}
+
+export async function signOut() {
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error("Error signing out:", error);
+    throw error;
+  }
 }

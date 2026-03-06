@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, Plane, DollarSign, CalendarDays, Compass, BookOpen } from "lucide-react";
+import { MapPin, Plane, DollarSign, CalendarDays, Compass, BookOpen, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PlacesAutocomplete from "@/components/PlacesAutocomplete";
 import PastExpeditions from "@/components/PastExpeditions";
 import { sanitizeInput } from "@/lib/sanitize";
+import { signOut } from "@/lib/supabase";
+import { toast } from "sonner";
 import heroBg from "@/assets/hero-bg.jpg";
 
 interface OnboardingFormProps {
@@ -45,6 +47,17 @@ const OnboardingForm = ({ onSubmit, isLoading = false }: OnboardingFormProps) =>
 
   const isValid = origin && destination && budget && days && !isLoading;
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success("Signed out successfully");
+      navigate("/auth");
+    } catch (error) {
+      console.error("Sign out error:", error);
+      toast.error("Failed to sign out");
+    }
+  };
+
   return (
     <div
       className="relative flex min-h-screen flex-col items-center bg-primary"
@@ -70,13 +83,22 @@ const OnboardingForm = ({ onSubmit, isLoading = false }: OnboardingFormProps) =>
             PlanAway
           </span>
         </div>
-        <Button
-          onClick={() => navigate("/my-expeditions")}
-          className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg px-4 py-2 h-auto font-heading font-semibold text-xs uppercase tracking-wider"
-        >
-          <BookOpen className="h-4 w-4 mr-1.5" />
-          My Expeditions
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => navigate("/my-expeditions")}
+            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg px-4 py-2 h-auto font-heading font-semibold text-xs uppercase tracking-wider"
+          >
+            <BookOpen className="h-4 w-4 mr-1.5" />
+            My Expeditions
+          </Button>
+          <Button
+            onClick={handleSignOut}
+            variant="outline"
+            className="bg-card/50 hover:bg-card border-primary-foreground/20 text-primary-foreground shadow-lg px-3 py-2 h-auto"
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
+        </div>
       </motion.header>
 
       {/* Card */}

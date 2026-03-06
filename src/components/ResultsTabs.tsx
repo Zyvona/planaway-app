@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import VibeChips from "@/components/VibeChips";
 import ActivityOptions, { ActivityOption } from "@/components/ActivityOptions";
 import { toast } from "sonner";
-import { supabase } from "@/lib/supabase";
+import { saveTrip } from "@/lib/supabase";
 
 interface ResultsTabsProps {
   origin: string;
@@ -120,23 +120,28 @@ const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinat
 
           onDataUpdate(dataToSave);
 
-          await supabase.from("trips").insert({
+          const saved = await saveTrip({
             origin,
             destination,
             origin_lat: originCoords?.lat,
             origin_lng: originCoords?.lng,
             destination_lat: destinationCoords?.lat,
             destination_lng: destinationCoords?.lng,
-            budget: parseFloat(budget),
-            days: parseInt(days, 10),
+            budget_limit: parseFloat(budget),
+            duration_days: parseInt(days, 10),
             itinerary_data: tripData.itinerary_data,
             budget_data: tripData.budget_data,
             safety_data: tripData.safety_data,
             selected_vibes: [],
             activity_selections: initialSelections,
+            market_note: tripData.market_note || "",
           });
 
-          toast.success("Trip generated and saved!");
+          if (saved) {
+            toast.success("Trip generated and saved!");
+          } else {
+            toast.error("Failed to save trip");
+          }
         }
       } catch (error) {
         console.error("Error generating trip:", error);
