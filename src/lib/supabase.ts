@@ -9,8 +9,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export type BudgetLevel = "Economy" | "Standard" | "Luxury";
-
 export interface Trip {
   id?: string;
   origin: string;
@@ -20,7 +18,6 @@ export interface Trip {
   destination_lat?: number;
   destination_lng?: number;
   budget: number;
-  budget_level: BudgetLevel;
   days: number;
   itinerary_data?: any;
   budget_data?: any;
@@ -34,7 +31,6 @@ export async function saveTrip(tripData: {
   destination: string;
   budget: string;
   days: string;
-  budget_level: BudgetLevel;
   originCoords?: { lat: number; lng: number };
   destinationCoords?: { lat: number; lng: number };
 }): Promise<Trip | null> {
@@ -48,7 +44,6 @@ export async function saveTrip(tripData: {
       destination_lat: tripData.destinationCoords?.lat,
       destination_lng: tripData.destinationCoords?.lng,
       budget: parseFloat(tripData.budget),
-      budget_level: tripData.budget_level,
       days: parseInt(tripData.days, 10),
     })
     .select()

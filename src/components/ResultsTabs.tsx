@@ -3,14 +3,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDays, DollarSign, ShieldCheck } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-type BudgetLevel = "Economy" | "Standard" | "Luxury";
-
 interface ResultsTabsProps {
   origin: string;
   destination: string;
   budget: string;
   days: string;
-  budgetLevel: BudgetLevel;
   onDataUpdate: (data: { itinerary?: any; budget?: any; safety?: any }) => void;
 }
 
@@ -30,7 +27,7 @@ const SkeletonBlock = () => (
   </div>
 );
 
-const ResultsTabs = ({ origin, destination, budget, days, budgetLevel, onDataUpdate }: ResultsTabsProps) => {
+const ResultsTabs = ({ origin, destination, budget, days, onDataUpdate }: ResultsTabsProps) => {
   const [itineraryData, setItineraryData] = useState<any>(null);
   const [budgetData, setBudgetData] = useState<any>(null);
   const [safetyData, setSafetyData] = useState<any>(null);
@@ -62,7 +59,7 @@ const ResultsTabs = ({ origin, destination, budget, days, budgetLevel, onDataUpd
     setBudgetData(mockBudget);
     setSafetyData(mockSafety);
     onDataUpdate({ itinerary: mockItinerary, budget: mockBudget, safety: mockSafety });
-  }, [origin, destination, budget, days, budgetLevel, onDataUpdate]);
+  }, [origin, destination, budget, days, onDataUpdate]);
 
   return (
     <Tabs defaultValue="itinerary" className="flex flex-col h-full">

@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, Plane, DollarSign, CalendarDays, Compass, Sparkles, BookOpen } from "lucide-react";
+import { MapPin, Plane, DollarSign, CalendarDays, Compass, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PlacesAutocomplete from "@/components/PlacesAutocomplete";
 import heroBg from "@/assets/hero-bg.jpg";
-
-type BudgetLevel = "Economy" | "Standard" | "Luxury";
 
 interface OnboardingFormProps {
   onSubmit: (data: {
@@ -14,7 +12,6 @@ interface OnboardingFormProps {
     destination: string;
     budget: string;
     days: string;
-    budget_level: BudgetLevel;
     originCoords?: { lat: number; lng: number };
     destinationCoords?: { lat: number; lng: number };
   }) => void;
@@ -26,26 +23,24 @@ const OnboardingForm = ({ onSubmit }: OnboardingFormProps) => {
   const [destination, setDestination] = useState("");
   const [budget, setBudget] = useState("");
   const [days, setDays] = useState("");
-  const [budgetLevel, setBudgetLevel] = useState<BudgetLevel>("Standard");
   const [originCoords, setOriginCoords] = useState<{ lat: number; lng: number } | undefined>();
   const [destinationCoords, setDestinationCoords] = useState<{ lat: number; lng: number } | undefined>();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (origin && destination && budget && days && budgetLevel) {
+    if (origin && destination && budget && days) {
       onSubmit({
         origin,
         destination,
         budget,
         days,
-        budget_level: budgetLevel,
         originCoords,
         destinationCoords,
       });
     }
   };
 
-  const isValid = origin && destination && budget && days && budgetLevel;
+  const isValid = origin && destination && budget && days;
 
   return (
     <div
@@ -182,34 +177,8 @@ const OnboardingForm = ({ onSubmit }: OnboardingFormProps) => {
             </div>
           </div>
 
-          {/* Budget Level */}
-          <div>
-            <label className="text-xs font-heading font-bold uppercase tracking-wider text-foreground mb-3 block">
-              Budget Level
-            </label>
-            <div className="flex items-center gap-3 border-b-2 border-primary/20 pb-2">
-              <Sparkles className="h-4 w-4 text-muted-foreground shrink-0" />
-              <div className="flex gap-2 w-full">
-                {(["Economy", "Standard", "Luxury"] as BudgetLevel[]).map((level) => (
-                  <button
-                    key={level}
-                    type="button"
-                    onClick={() => setBudgetLevel(level)}
-                    className={`flex-1 py-2 px-3 rounded-lg text-xs font-heading font-semibold transition-all ${
-                      budgetLevel === level
-                        ? "bg-primary text-primary-foreground shadow-md"
-                        : "bg-muted/50 text-muted-foreground hover:bg-muted"
-                    }`}
-                  >
-                    {level}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
           {/* Submit */}
-          <div className="pt-2">
+          <div className="pt-4">
             <Button
               type="submit"
               size="xl"
