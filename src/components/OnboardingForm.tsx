@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, Plane, DollarSign, CalendarDays, Compass, Sparkles } from "lucide-react";
+import { MapPin, Plane, DollarSign, CalendarDays, Compass, Sparkles, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PlacesAutocomplete from "@/components/PlacesAutocomplete";
 import heroBg from "@/assets/hero-bg.jpg";
@@ -20,6 +21,7 @@ interface OnboardingFormProps {
 }
 
 const OnboardingForm = ({ onSubmit }: OnboardingFormProps) => {
+  const navigate = useNavigate();
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [budget, setBudget] = useState("");
@@ -70,9 +72,13 @@ const OnboardingForm = ({ onSubmit }: OnboardingFormProps) => {
             PlanAway
           </span>
         </div>
-        <span className="text-xs font-heading font-semibold uppercase tracking-widest text-accent">
-          AI Travel Planner
-        </span>
+        <Button
+          onClick={() => navigate("/my-expeditions")}
+          className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg px-4 py-2 h-auto font-heading font-semibold text-xs uppercase tracking-wider"
+        >
+          <BookOpen className="h-4 w-4 mr-1.5" />
+          My Expeditions
+        </Button>
       </motion.header>
 
       {/* Card */}

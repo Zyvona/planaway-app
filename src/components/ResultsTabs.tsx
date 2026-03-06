@@ -1,6 +1,18 @@
+import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDays, DollarSign, ShieldCheck } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+
+type BudgetLevel = "Economy" | "Standard" | "Luxury";
+
+interface ResultsTabsProps {
+  origin: string;
+  destination: string;
+  budget: string;
+  days: string;
+  budgetLevel: BudgetLevel;
+  onDataUpdate: (data: { itinerary?: any; budget?: any; safety?: any }) => void;
+}
 
 const SkeletonCard = ({ lines = 3 }: { lines?: number }) => (
   <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
@@ -18,7 +30,40 @@ const SkeletonBlock = () => (
   </div>
 );
 
-const ResultsTabs = () => {
+const ResultsTabs = ({ origin, destination, budget, days, budgetLevel, onDataUpdate }: ResultsTabsProps) => {
+  const [itineraryData, setItineraryData] = useState<any>(null);
+  const [budgetData, setBudgetData] = useState<any>(null);
+  const [safetyData, setSafetyData] = useState<any>(null);
+
+  useEffect(() => {
+    const mockItinerary = {
+      days: Array.from({ length: parseInt(days) }, (_, i) => ({
+        day: i + 1,
+        activities: [`Explore ${destination}`, "Local dining", "Evening relaxation"],
+      })),
+    };
+    const mockBudget = {
+      categories: [
+        { name: "Accommodation", amount: parseFloat(budget) * 0.4 },
+        { name: "Food", amount: parseFloat(budget) * 0.3 },
+        { name: "Activities", amount: parseFloat(budget) * 0.2 },
+        { name: "Transport", amount: parseFloat(budget) * 0.1 },
+      ],
+    };
+    const mockSafety = {
+      tips: [
+        "Keep copies of important documents",
+        "Share your itinerary with someone",
+        "Stay aware of your surroundings",
+      ],
+    };
+
+    setItineraryData(mockItinerary);
+    setBudgetData(mockBudget);
+    setSafetyData(mockSafety);
+    onDataUpdate({ itinerary: mockItinerary, budget: mockBudget, safety: mockSafety });
+  }, [origin, destination, budget, days, budgetLevel, onDataUpdate]);
+
   return (
     <Tabs defaultValue="itinerary" className="flex flex-col h-full">
       <TabsList className="grid w-full grid-cols-3 bg-card rounded-none border-b border-border h-13 p-0">

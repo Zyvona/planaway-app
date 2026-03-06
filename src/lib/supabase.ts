@@ -22,6 +22,9 @@ export interface Trip {
   budget: number;
   budget_level: BudgetLevel;
   days: number;
+  itinerary_data?: any;
+  budget_data?: any;
+  safety_data?: any;
   created_at?: string;
   updated_at?: string;
 }
