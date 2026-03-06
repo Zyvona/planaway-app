@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { MapPin, Plane, DollarSign, CalendarDays, Compass, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PlacesAutocomplete from "@/components/PlacesAutocomplete";
+import PastExpeditions from "@/components/PastExpeditions";
 import { sanitizeInput } from "@/lib/sanitize";
 import heroBg from "@/assets/hero-bg.jpg";
 
@@ -208,6 +209,22 @@ const OnboardingForm = ({ onSubmit, isLoading = false }: OnboardingFormProps) =>
             Powered by AI · Built for solo explorers
           </p>
         </div>
+      </motion.div>
+
+      {/* Past Expeditions */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="relative z-10 mx-4 mb-8 w-full max-w-md"
+      >
+        <div className="mb-3 flex items-center gap-2">
+          <BookOpen className="h-4 w-4 text-primary-foreground" />
+          <h2 className="text-sm font-heading font-bold text-primary-foreground uppercase tracking-wider">
+            Past Expeditions
+          </h2>
+        </div>
+        <PastExpeditions />
       </motion.div>
     </div>
   );

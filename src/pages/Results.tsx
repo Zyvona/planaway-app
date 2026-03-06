@@ -27,6 +27,7 @@ const Results = () => {
     days: string;
     originCoords?: { lat: number; lng: number };
     destinationCoords?: { lat: number; lng: number };
+    loadedTripData?: any;
   } | null;
 
   if (!data) {
@@ -150,6 +151,9 @@ const Results = () => {
           destination={data.destination}
           budget={data.budget}
           days={data.days}
+          originCoords={data.originCoords}
+          destinationCoords={data.destinationCoords}
+          loadedTripData={data.loadedTripData}
           onDataUpdate={setTripData}
         />
       </motion.div>

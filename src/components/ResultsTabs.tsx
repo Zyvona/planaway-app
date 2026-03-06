@@ -5,18 +5,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 import VibeChips from "@/components/VibeChips";
 import ActivityOptions, { ActivityOption } from "@/components/ActivityOptions";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
 
 interface ResultsTabsProps {
   origin: string;
   destination: string;
   budget: string;
   days: string;
+  originCoords?: { lat: number; lng: number };
+  destinationCoords?: { lat: number; lng: number };
+  loadedTripData?: any;
   onDataUpdate: (data: {
     itinerary?: any;
     budget?: any;
     safety?: any;
     selectedVibes?: string[];
     activitySelections?: Record<number, string>;
+    marketNote?: string;
   }) => void;
 }
 
@@ -36,70 +41,113 @@ const SkeletonBlock = () => (
   </div>
 );
 
-const ResultsTabs = ({ origin, destination, budget, days, onDataUpdate }: ResultsTabsProps) => {
+const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinationCoords, loadedTripData, onDataUpdate }: ResultsTabsProps) => {
   const [itineraryData, setItineraryData] = useState<any>(null);
   const [budgetData, setBudgetData] = useState<any>(null);
   const [safetyData, setSafetyData] = useState<any>(null);
+  const [marketNote, setMarketNote] = useState<string>("");
   const [selectedVibes, setSelectedVibes] = useState<string[]>([]);
   const [activitySelections, setActivitySelections] = useState<Record<number, string>>({});
   const [isRefining, setIsRefining] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
-    const mockItinerary = {
-      days: Array.from({ length: parseInt(days) }, (_, i) => ({
-        day: i + 1,
-        activities: [
-          {
-            id: `day${i + 1}-option-a`,
-            title: `Explore ${destination}`,
-            description: "Discover the main attractions and hidden gems",
-            duration: "3-4 hours",
-            cost: "$30-50",
+    if (loadedTripData) {
+      setItineraryData(loadedTripData.itinerary_data);
+      setBudgetData(loadedTripData.budget_data);
+      setSafetyData(loadedTripData.safety_data);
+      setSelectedVibes(loadedTripData.selected_vibes || []);
+      setActivitySelections(loadedTripData.activity_selections || {});
+      setMarketNote(loadedTripData.market_note || "");
+
+      onDataUpdate({
+        itinerary: loadedTripData.itinerary_data,
+        budget: loadedTripData.budget_data,
+        safety: loadedTripData.safety_data,
+        selectedVibes: loadedTripData.selected_vibes || [],
+        activitySelections: loadedTripData.activity_selections || {},
+        marketNote: loadedTripData.market_note || "",
+      });
+      return;
+    }
+
+    const generateTrip = async () => {
+      setIsGenerating(true);
+      try {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+        const response = await fetch(`${supabaseUrl}/functions/v1/generate-trip`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${supabaseAnonKey}`,
           },
-          {
-            id: `day${i + 1}-option-b`,
-            title: "Local dining experience",
-            description: "Taste authentic local cuisine",
-            duration: "2-3 hours",
-            cost: "$20-40",
-          },
-        ],
-      })),
-    };
-    const mockBudget = {
-      categories: [
-        { name: "Accommodation", amount: parseFloat(budget) * 0.4 },
-        { name: "Food", amount: parseFloat(budget) * 0.3 },
-        { name: "Activities", amount: parseFloat(budget) * 0.2 },
-        { name: "Transport", amount: parseFloat(budget) * 0.1 },
-      ],
-    };
-    const mockSafety = {
-      tips: [
-        "Keep copies of important documents",
-        "Share your itinerary with someone",
-        "Stay aware of your surroundings",
-      ],
+          body: JSON.stringify({
+            origin,
+            destination,
+            budget,
+            days,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to generate trip");
+        }
+
+        const result = await response.json();
+        if (result.success && result.data) {
+          const tripData = result.data;
+          setItineraryData(tripData.itinerary_data);
+          setBudgetData(tripData.budget_data);
+          setSafetyData(tripData.safety_data);
+          setMarketNote(tripData.market_note || "");
+
+          const initialSelections: Record<number, string> = {};
+          tripData.itinerary_data?.forEach((day: any) => {
+            initialSelections[day.day] = day.activities[0].id;
+          });
+          setActivitySelections(initialSelections);
+
+          const dataToSave = {
+            itinerary: tripData.itinerary_data,
+            budget: tripData.budget_data,
+            safety: tripData.safety_data,
+            selectedVibes: [],
+            activitySelections: initialSelections,
+            marketNote: tripData.market_note || "",
+          };
+
+          onDataUpdate(dataToSave);
+
+          await supabase.from("trips").insert({
+            origin,
+            destination,
+            origin_lat: originCoords?.lat,
+            origin_lng: originCoords?.lng,
+            destination_lat: destinationCoords?.lat,
+            destination_lng: destinationCoords?.lng,
+            budget: parseFloat(budget),
+            days: parseInt(days, 10),
+            itinerary_data: tripData.itinerary_data,
+            budget_data: tripData.budget_data,
+            safety_data: tripData.safety_data,
+            selected_vibes: [],
+            activity_selections: initialSelections,
+          });
+
+          toast.success("Trip generated and saved!");
+        }
+      } catch (error) {
+        console.error("Error generating trip:", error);
+        toast.error("Failed to generate trip. Please try again.");
+      } finally {
+        setIsGenerating(false);
+      }
     };
 
-    setItineraryData(mockItinerary);
-    setBudgetData(mockBudget);
-    setSafetyData(mockSafety);
-
-    const initialSelections: Record<number, string> = {};
-    mockItinerary.days.forEach((day: any) => {
-      initialSelections[day.day] = day.activities[0].id;
-    });
-    setActivitySelections(initialSelections);
-
-    onDataUpdate({
-      itinerary: mockItinerary,
-      budget: mockBudget,
-      safety: mockSafety,
-      selectedVibes: [],
-      activitySelections: initialSelections,
-    });
-  }, [origin, destination, budget, days, onDataUpdate]);
+    generateTrip();
+  }, [origin, destination, budget, days, originCoords, destinationCoords, loadedTripData, onDataUpdate]);
 
   const handleVibeToggle = async (vibeId: string) => {
     const newSelectedVibes = selectedVibes.includes(vibeId)
@@ -189,21 +237,21 @@ const ResultsTabs = ({ origin, destination, budget, days, onDataUpdate }: Result
           className="flex items-center gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-secondary data-[state=active]:bg-transparent data-[state=active]:text-secondary data-[state=active]:shadow-none text-muted-foreground h-full font-heading"
         >
           <CalendarDays className="h-4 w-4" />
-          <span className="text-sm font-semibold">Itinerary</span>
+          <span className="text-sm font-semibold">The Journey</span>
         </TabsTrigger>
         <TabsTrigger
           value="budget"
           className="flex items-center gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none text-muted-foreground h-full font-heading"
         >
           <DollarSign className="h-4 w-4" />
-          <span className="text-sm font-semibold">Budget</span>
+          <span className="text-sm font-semibold">The Ledger</span>
         </TabsTrigger>
         <TabsTrigger
           value="safety"
           className="flex items-center gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-success data-[state=active]:bg-transparent data-[state=active]:text-success data-[state=active]:shadow-none text-muted-foreground h-full font-heading"
         >
           <ShieldCheck className="h-4 w-4" />
-          <span className="text-sm font-semibold">Safety</span>
+          <span className="text-sm font-semibold">The Sentinel</span>
         </TabsTrigger>
       </TabsList>
 
@@ -321,6 +369,37 @@ const ResultsTabs = ({ origin, destination, budget, days, onDataUpdate }: Result
                 </div>
               </div>
             )}
+
+            {budgetData.tier_comparison && (
+              <div className="mt-6">
+                <h4 className="font-heading font-bold text-foreground mb-3">Value Optimizer</h4>
+                <div className="space-y-3">
+                  {Object.entries(budgetData.tier_comparison).map(([tier, data]: [string, any]) => (
+                    <div key={tier} className="rounded-xl border border-border bg-card p-4 shadow-sm">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-heading font-bold text-foreground capitalize">
+                          {tier}
+                        </span>
+                        <span className="text-sm font-heading font-bold text-accent">
+                          ${data.total}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
+                        <span>Stay: ${data.accommodation}</span>
+                        <span>Food: ${data.food}</span>
+                        <span>Fun: ${data.activities}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {marketNote && (
+              <div className="mt-4 rounded-xl border border-accent/30 bg-accent/5 p-3">
+                <p className="text-xs text-muted-foreground italic">{marketNote}</p>
+              </div>
+            )}
           </div>
         )}
       </TabsContent>
@@ -333,7 +412,68 @@ const ResultsTabs = ({ origin, destination, budget, days, onDataUpdate }: Result
           <div className="h-2 w-2 rotate-45 bg-accent" />
           <div className="flex-1 h-px bg-border" />
         </div>
-        <SkeletonBlock />
+
+        {!safetyData ? (
+          <SkeletonBlock />
+        ) : (
+          <div className="space-y-4">
+            {safetyData.score && (
+              <div className="rounded-xl border border-success/30 bg-success/5 p-4 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-heading font-bold text-foreground">
+                    Safety Score
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1">
+                      {Array.from({ length: 10 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className={`h-2 w-2 rounded-full ${
+                            i < safetyData.score ? 'bg-success' : 'bg-muted'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-lg font-heading font-bold text-success">
+                      {safetyData.score}/10
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {safetyData.emergency_contacts && safetyData.emergency_contacts.length > 0 && (
+              <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+                <h4 className="text-sm font-heading font-bold text-foreground mb-3">
+                  Emergency Contacts ({new Date().getFullYear()})
+                </h4>
+                <div className="space-y-2">
+                  {safetyData.emergency_contacts.map((contact: any, index: number) => (
+                    <div key={index} className="flex justify-between items-center text-xs">
+                      <span className="text-muted-foreground">{contact.service}</span>
+                      <a
+                        href={`tel:${contact.number}`}
+                        className="font-heading font-semibold text-accent hover:underline"
+                      >
+                        {contact.number}
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {safetyData.tips && safetyData.tips.length > 0 && (
+              <div className="space-y-2">
+                {safetyData.tips.map((tip: string, index: number) => (
+                  <div key={index} className="rounded-xl border border-border bg-card p-3 shadow-sm">
+                    <p className="text-xs text-foreground">{tip}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </TabsContent>
     </Tabs>
   );
