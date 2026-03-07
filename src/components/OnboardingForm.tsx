@@ -232,22 +232,6 @@ const OnboardingForm = ({ onSubmit, isLoading = false }: OnboardingFormProps) =>
           </p>
         </div>
       </motion.div>
-
-      {/* Past Expeditions */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
-        className="relative z-10 mx-4 mb-8 w-full max-w-md"
-      >
-        <div className="mb-3 flex items-center gap-2">
-          <BookOpen className="h-4 w-4 text-primary-foreground" />
-          <h2 className="text-sm font-heading font-bold text-primary-foreground uppercase tracking-wider">
-            Past Expeditions
-          </h2>
-        </div>
-        <PastExpeditions />
-      </motion.div>
     </div>
   );
 };
