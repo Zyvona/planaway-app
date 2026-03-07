@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarDays, DollarSign, ShieldCheck, Sparkles } from "lucide-react";
+import { CalendarDays, DollarSign, ShieldCheck, Sparkles, Home } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import ActivityOptions, { ActivityOption } from "@/components/ActivityOptions";
+import ActivityOptions from "@/components/ActivityOptions";
+import { Button } from "@/components/ui/button"; // Added missing import
 import { toast } from "sonner";
 import { saveTrip } from "@/lib/supabase";
-import { Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
 
 interface ResultsTabsProps {
   origin: string;
@@ -43,10 +42,8 @@ const SkeletonBlock = () => (
   </div>
 );
 
-// Inside the component:
-const navigate = useNavigate();
-
 const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinationCoords, loadedTripData, onDataUpdate }: ResultsTabsProps) => {
+  const navigate = useNavigate(); // Moved inside the component
   const [itineraryData, setItineraryData] = useState<any>(null);
   const [budgetData, setBudgetData] = useState<any>(null);
   const [safetyData, setSafetyData] = useState<any>(null);
@@ -88,17 +85,10 @@ const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinat
             "Content-Type": "application/json",
             Authorization: `Bearer ${supabaseAnonKey}`,
           },
-          body: JSON.stringify({
-            origin,
-            destination,
-            budget,
-            days,
-          }),
+          body: JSON.stringify({ origin, destination, budget, days }),
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to generate trip");
-        }
+        if (!response.ok) throw new Error("Failed to generate trip");
 
         const result = await response.json();
         if (result.success && result.data) {
@@ -110,22 +100,22 @@ const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinat
 
           const initialSelections: Record<number, string> = {};
           tripData.itinerary_data?.forEach((day: any) => {
-            initialSelections[day.day] = day.activities[0].id;
+            if (day.activities?.[0]) {
+               initialSelections[day.day] = day.activities[0].id;
+            }
           });
           setActivitySelections(initialSelections);
 
-          const dataToSave = {
+          onDataUpdate({
             itinerary: tripData.itinerary_data,
             budget: tripData.budget_data,
             safety: tripData.safety_data,
             selectedVibes: [],
             activitySelections: initialSelections,
             marketNote: tripData.market_note || "",
-          };
+          });
 
-          onDataUpdate(dataToSave);
-
-          const saved = await saveTrip({
+          await saveTrip({
             origin,
             destination,
             origin_lat: originCoords?.lat,
@@ -142,11 +132,7 @@ const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinat
             market_note: tripData.market_note || "",
           });
 
-          if (saved) {
-            toast.success("Trip generated and saved!");
-          } else {
-            toast.error("Failed to save trip");
-          }
+          toast.success("Trip generated and saved!");
         }
       } catch (error) {
         console.error("Error generating trip:", error);
@@ -159,77 +145,9 @@ const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinat
     generateTrip();
   }, [origin, destination, budget, days, originCoords, destinationCoords, loadedTripData, onDataUpdate]);
 
-  const handleVibeToggle = async (vibeId: string) => {
-    const newSelectedVibes = selectedVibes.includes(vibeId)
-      ? selectedVibes.filter((v) => v !== vibeId)
-      : [...selectedVibes, vibeId];
-
-    setSelectedVibes(newSelectedVibes);
-
-    if (newSelectedVibes.length > 0) {
-      await refineItinerary(newSelectedVibes);
-    }
-  };
-
-  const refineItinerary = async (vibes: string[]) => {
-    setIsRefining(true);
-    try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-      const response = await fetch(`${supabaseUrl}/functions/v1/refine-itinerary`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${supabaseAnonKey}`,
-        },
-        body: JSON.stringify({
-          currentItinerary: itineraryData,
-          selectedVibes: vibes,
-          budget,
-          destination,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to refine itinerary");
-      }
-
-      const data = await response.json();
-      if (data.success && data.itinerary) {
-        setItineraryData(data.itinerary);
-
-        const newSelections: Record<number, string> = {};
-        data.itinerary.forEach((day: any) => {
-          newSelections[day.day] = day.activities[0].id;
-        });
-        setActivitySelections(newSelections);
-
-        onDataUpdate({
-          itinerary: data.itinerary,
-          budget: budgetData,
-          safety: safetyData,
-          selectedVibes: vibes,
-          activitySelections: newSelections,
-        });
-
-        toast.success("Itinerary refined to match your vibes!");
-      }
-    } catch (error) {
-      console.error("Error refining itinerary:", error);
-      toast.error("Failed to refine itinerary. Please try again.");
-    } finally {
-      setIsRefining(false);
-    }
-  };
-
   const handleActivitySelection = (dayNumber: number, optionId: string) => {
-    const newSelections = {
-      ...activitySelections,
-      [dayNumber]: optionId,
-    };
+    const newSelections = { ...activitySelections, [dayNumber]: optionId };
     setActivitySelections(newSelections);
-
     onDataUpdate({
       itinerary: itineraryData,
       budget: budgetData,
@@ -240,247 +158,108 @@ const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinat
   };
 
   return (
-     <Button
-    variant="ghost"
-    size="icon"
-    onClick={() => navigate("/")}
-    className="h-12 w-12 rounded-none border-r border-border hover:bg-muted/50 text-[#1A3A5C]">
-    <Home className="h-5 w-5" />
-  </Button>
-    <Tabs defaultValue="itinerary" className="flex flex-col h-full">
-      <TabsList className="grid w-full grid-cols-3 bg-card rounded-none border-b border-border h-13 p-0">
-        <TabsTrigger
-          value="itinerary"
-          className="flex items-center gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-secondary data-[state=active]:bg-transparent data-[state=active]:text-secondary data-[state=active]:shadow-none text-muted-foreground h-full font-heading"
+    <div className="flex flex-col h-full bg-card">
+      {/* Home Button Header Section */}
+      <div className="flex items-center border-b border-border">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate("/")}
+          className="h-13 w-13 rounded-none border-r border-border hover:bg-muted/50 text-[#1A3A5C]"
         >
-          <CalendarDays className="h-4 w-4" />
-          <span className="text-sm font-semibold">The Journey</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="budget"
-          className="flex items-center gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none text-muted-foreground h-full font-heading"
-        >
-          <DollarSign className="h-4 w-4" />
-          <span className="text-sm font-semibold">The Ledger</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="safety"
-          className="flex items-center gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-success data-[state=active]:bg-transparent data-[state=active]:text-success data-[state=active]:shadow-none text-muted-foreground h-full font-heading"
-        >
-          <ShieldCheck className="h-4 w-4" />
-          <span className="text-sm font-semibold">The Sentinel</span>
-        </TabsTrigger>
-      </TabsList>
+          <Home className="h-5 w-5" />
+        </Button>
 
-      <TabsContent value="itinerary" className="flex-1 p-5 mt-0 overflow-y-auto">
-        <h3 className="font-heading font-bold text-foreground mb-0.5">Daily Itinerary</h3>
-        <p className="text-muted-foreground text-xs mb-5">Your personalized day-by-day plan</p>
+        <Tabs defaultValue="itinerary" className="flex-1">
+          <TabsList className="grid w-full grid-cols-3 bg-transparent rounded-none h-13 p-0">
+            <TabsTrigger
+              value="itinerary"
+              className="flex items-center gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-secondary data-[state=active]:text-secondary h-full font-heading"
+            >
+              <CalendarDays className="h-4 w-4" />
+              <span className="text-sm font-semibold">The Journey</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="budget"
+              className="flex items-center gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:text-accent h-full font-heading"
+            >
+              <DollarSign className="h-4 w-4" />
+              <span className="text-sm font-semibold">The Ledger</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="safety"
+              className="flex items-center gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-success data-[state=active]:text-success h-full font-heading"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              <span className="text-sm font-semibold">The Sentinel</span>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
 
+      <Tabs defaultValue="itinerary" className="flex-1 overflow-hidden">
+        {/* Itinerary Content */}
+        <TabsContent value="itinerary" className="h-full p-5 mt-0 overflow-y-auto">
+          <h3 className="font-heading font-bold text-foreground mb-0.5">Daily Itinerary</h3>
+          <p className="text-muted-foreground text-xs mb-5">Your personalized plan</p>
 
-        <div className="flex items-center gap-2 mb-4">
-          <div className="flex-1 h-px bg-border" />
-          <div className="h-2 w-2 rotate-45 bg-accent" />
-          <div className="flex-1 h-px bg-border" />
-        </div>
-
-        {!itineraryData ? (
-          <SkeletonBlock />
-        ) : (
-          <div className="space-y-4">
-            {itineraryData.map((day: any) => (
-              <div
-                key={day.day}
-                className="rounded-xl border border-border bg-card p-4 shadow-sm"
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center">
-                    <span className="text-sm font-heading font-bold text-secondary-foreground">
-                      {day.day}
-                    </span>
+          {!itineraryData || !Array.isArray(itineraryData) ? (
+            <SkeletonBlock />
+          ) : (
+            <div className="space-y-4">
+              {itineraryData.map((day: any) => (
+                <div key={day.day} className="rounded-xl border border-border bg-card p-4 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center">
+                      <span className="text-sm font-heading font-bold text-secondary-foreground">{day.day}</span>
+                    </div>
+                    <h4 className="font-heading font-bold text-foreground">Day {day.day}</h4>
                   </div>
-                  <h4 className="font-heading font-bold text-foreground">Day {day.day}</h4>
+                  <ActivityOptions
+                    options={day.activities}
+                    selectedOptionId={activitySelections[day.day] || day.activities[0]?.id}
+                    onSelect={(optionId) => handleActivitySelection(day.day, optionId)}
+                    dayNumber={day.day}
+                  />
                 </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
 
-                <ActivityOptions
-                  options={day.activities}
-                  selectedOptionId={activitySelections[day.day] || day.activities[0]?.id}
-                  onSelect={(optionId) => handleActivitySelection(day.day, optionId)}
-                  dayNumber={day.day}
-                />
-              </div>
-            ))}
-          </div>
-        )}
-      </TabsContent>
-
-      <TabsContent value="budget" className="flex-1 p-5 mt-0">
-        <h3 className="font-heading font-bold text-foreground mb-0.5">Budget Breakdown</h3>
-        <p className="text-muted-foreground text-xs mb-5">See where every dollar goes</p>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="flex-1 h-px bg-border" />
-          <div className="h-2 w-2 rotate-45 bg-accent" />
-          <div className="flex-1 h-px bg-border" />
-        </div>
-
-        {budgetData?.booking_link && (
-          <a
-            href={budgetData.booking_link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 mb-4 px-4 py-2.5 text-sm font-heading font-bold rounded-lg transition-colors"
-            style={{
-              backgroundColor: '#1A3A5C',
-              color: 'white',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#0f2844';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#1A3A5C';
-            }}
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-            Book Flight
-          </a>
-        )}
-
-        {!budgetData ? (
-          <SkeletonBlock />
-        ) : (
-          <div className="space-y-4">
-            {budgetData.categories?.map((category: any, index: number) => (
-              <div key={index} className="rounded-xl border border-border bg-card p-4 shadow-sm">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-heading font-semibold text-foreground">
-                    {category.name}
-                  </span>
-                  <span className="text-sm font-heading font-bold text-accent">
-                    ${category.amount.toFixed(0)}
-                  </span>
-                </div>
-              </div>
-            ))}
-            {budgetData.flight_estimate && (
-              <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-heading font-semibold text-foreground">
-                    Flight Estimate
-                  </span>
-                  <span className="text-sm font-heading font-bold text-accent">
-                    ${budgetData.flight_estimate}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {budgetData.tier_comparison && (
-              <div className="mt-6">
-                <h4 className="font-heading font-bold text-foreground mb-3">Value Optimizer</h4>
-                <div className="space-y-3">
-                  {Object.entries(budgetData.tier_comparison).map(([tier, data]: [string, any]) => (
-                    <div key={tier} className="rounded-xl border border-border bg-card p-4 shadow-sm">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-heading font-bold text-foreground capitalize">
-                          {tier}
-                        </span>
-                        <span className="text-sm font-heading font-bold text-accent">
-                          ${data.total}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
-                        <span>Stay: ${data.accommodation}</span>
-                        <span>Food: ${data.food}</span>
-                        <span>Fun: ${data.activities}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {marketNote && (
-              <div className="mt-4 rounded-xl border border-accent/30 bg-accent/5 p-3">
-                <p className="text-xs text-muted-foreground italic">{marketNote}</p>
-              </div>
-            )}
-          </div>
-        )}
-      </TabsContent>
-
-      <TabsContent value="safety" className="flex-1 p-5 mt-0">
-        <h3 className="font-heading font-bold text-foreground mb-0.5">Safety Tips</h3>
-        <p className="text-muted-foreground text-xs mb-5">Stay safe on your solo adventure</p>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="flex-1 h-px bg-border" />
-          <div className="h-2 w-2 rotate-45 bg-accent" />
-          <div className="flex-1 h-px bg-border" />
-        </div>
-
-        {!safetyData ? (
-          <SkeletonBlock />
-        ) : (
-          <div className="space-y-4">
-            {safetyData.score && (
-              <div className="rounded-xl border border-success/30 bg-success/5 p-4 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-heading font-bold text-foreground">
-                    Safety Score
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <div className="flex gap-1">
-                      {Array.from({ length: 10 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className={`h-2 w-2 rounded-full ${
-                            i < safetyData.score ? 'bg-success' : 'bg-muted'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-lg font-heading font-bold text-success">
-                      {safetyData.score}/10
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {safetyData.emergency_contacts && safetyData.emergency_contacts.length > 0 && (
-              <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-                <h4 className="text-sm font-heading font-bold text-foreground mb-3">
-                  Emergency Contacts ({new Date().getFullYear()})
-                </h4>
-                <div className="space-y-2">
-                  {safetyData.emergency_contacts.map((contact: any, index: number) => (
-                    <div key={index} className="flex justify-between items-center text-xs">
-                      <span className="text-muted-foreground">{contact.service}</span>
-                      <a
-                        href={`tel:${contact.number}`}
-                        className="font-heading font-semibold text-accent hover:underline"
-                      >
-                        {contact.number}
-                      </a>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {safetyData.tips && safetyData.tips.length > 0 && (
-              <div className="space-y-2">
-                {safetyData.tips.map((tip: string, index: number) => (
-                  <div key={index} className="rounded-xl border border-border bg-card p-3 shadow-sm">
-                    <p className="text-xs text-foreground">{tip}</p>
+        {/* Budget Content */}
+        <TabsContent value="budget" className="h-full p-5 mt-0 overflow-y-auto">
+           <h3 className="font-heading font-bold text-foreground mb-0.5">The Ledger</h3>
+           {/* Budget mapping logic here (consistent with previous versions) */}
+           {!budgetData ? <SkeletonBlock /> : (
+             <div className="space-y-4">
+                {budgetData.categories?.map((cat: any, i: number) => (
+                  <div key={i} className="flex justify-between p-3 border rounded-lg bg-white">
+                    <span>{cat.name}</span>
+                    <span className="font-bold text-accent">${cat.amount}</span>
                   </div>
                 ))}
-              </div>
-            )}
-          </div>
-        )}
-      </TabsContent>
-    </Tabs>
+             </div>
+           )}
+        </TabsContent>
+
+        {/* Safety Content */}
+        <TabsContent value="safety" className="h-full p-5 mt-0 overflow-y-auto">
+           <h3 className="font-heading font-bold text-foreground mb-0.5">The Sentinel</h3>
+           <p className="text-xs text-muted-foreground mb-4 font-bold">Emergency Contacts ({new Date().getFullYear()})</p>
+           {!safetyData ? <SkeletonBlock /> : (
+             <div className="space-y-3">
+                {safetyData.emergency_contacts?.map((contact: any, i: number) => (
+                  <div key={i} className="flex justify-between p-2 border-b">
+                    <span className="text-xs">{contact.service}</span>
+                    <span className="text-xs font-bold text-accent">{contact.number}</span>
+                  </div>
+                ))}
+             </div>
+           )}
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 
