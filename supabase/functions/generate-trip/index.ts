@@ -14,10 +14,13 @@ interface GenerateTripRequest {
   days: string;
 }
 
-Deno.serve(async (req: Request) => {
-  // 1. Handle Preflight OPTIONS request (Fixes the 404 error)
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+Deno.serve(async (req) => {
+  // Fix the Resource Loading Error by handling preflight correctly
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { 
+      status: 200, // Explicitly return 200
+      headers: corsHeaders 
+    });
   }
 
   try {
