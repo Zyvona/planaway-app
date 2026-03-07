@@ -2,6 +2,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDays, DollarSign, ShieldCheck } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import ArrivalCard from "@/components/ArrivalCard";
+import DayCard from "@/components/DayCard";
+import { generateItinerary } from "@/lib/itinerary-generator";
 
 const SkeletonCard = ({ lines = 3 }: { lines?: number }) => (
   <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
@@ -27,6 +29,9 @@ interface ResultsTabsProps {
 }
 
 const ResultsTabs = ({ origin, destination, days, budget }: ResultsTabsProps) => {
+  const totalDays = days ? parseInt(days) : 7;
+  const itinerary = destination ? generateItinerary(destination, totalDays) : [];
+
   return (
     <Tabs defaultValue="itinerary" className="flex flex-col h-full">
       <TabsList className="grid w-full grid-cols-3 bg-card rounded-none border-b border-border h-13 p-0">
@@ -66,12 +71,15 @@ const ResultsTabs = ({ origin, destination, days, budget }: ResultsTabsProps) =>
           <div className="space-y-6">
             <ArrivalCard origin={origin} destination={destination} />
 
-            <div className="space-y-4">
-              <h4 className="font-heading font-semibold text-sm text-muted-foreground">
-                Days 2-{days || '7'}
-              </h4>
-              <SkeletonBlock />
-            </div>
+            {itinerary.map((day) => (
+              <DayCard
+                key={day.dayNumber}
+                dayNumber={day.dayNumber}
+                destination={destination}
+                activities={day.activities}
+                tip={day.tip}
+              />
+            ))}
           </div>
         ) : (
           <SkeletonBlock />
