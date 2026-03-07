@@ -147,12 +147,24 @@ Generate realistic ${currentYear} data for ${destination}. Each day should have 
     const geminiData = await geminiResponse.json();
     const responseText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error("Failed to parse AI response");
-    }
+    let tripData;
+    try {
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        console.error("No JSON found in Gemini response:", responseText);
+        throw new Error("Failed to parse AI response - no JSON found");
+      }
 
-    const tripData = JSON.parse(jsonMatch[0]);
+      tripData = JSON.parse(jsonMatch[0]);
+
+      if (!tripData.itinerary_data) {
+        console.error("Missing itinerary_data in parsed response:", tripData);
+        throw new Error("Invalid response structure from AI");
+      }
+    } catch (parseError) {
+      console.error("JSON parsing error. Raw Gemini response:", responseText);
+      throw new Error(`Failed to parse AI response: ${parseError instanceof Error ? parseError.message : "Unknown error"}`);
+    }
 
     return new Response(JSON.stringify({ success: true, data: tripData }), {
       headers: {

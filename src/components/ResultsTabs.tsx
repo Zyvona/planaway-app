@@ -195,7 +195,7 @@ const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinat
         setItineraryData(data.itinerary);
 
         const newSelections: Record<number, string> = {};
-        data.itinerary.days.forEach((day: any) => {
+        data.itinerary.forEach((day: any) => {
           newSelections[day.day] = day.activities[0].id;
         });
         setActivitySelections(newSelections);
@@ -287,7 +287,7 @@ const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinat
           <SkeletonBlock />
         ) : (
           <div className="space-y-4">
-            {itineraryData.days.map((day: any) => (
+            {itineraryData.map((day: any) => (
               <div
                 key={day.day}
                 className="rounded-xl border border-border bg-card p-4 shadow-sm"
