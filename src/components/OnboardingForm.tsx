@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { MapPin, Plane, DollarSign, CalendarDays, Compass, BookOpen, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PlacesAutocomplete from "@/components/PlacesAutocomplete";
-import PastExpeditions from "@/components/PastExpeditions";
 import { sanitizeInput } from "@/lib/sanitize";
 import { signOut } from "@/lib/supabase";
 import { toast } from "sonner";
