@@ -170,7 +170,7 @@ const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinat
           <Home className="h-5 w-5" />
         </Button>
 
-        <Tabs defaultValue="itinerary" className="flex-1">
+        <Tabs defaultValue="itinerary" className="flex-1 flex flex-col h-full">
           <TabsList className="grid w-full grid-cols-3 bg-transparent rounded-none h-13 p-0">
             <TabsTrigger
               value="itinerary"
@@ -194,71 +194,144 @@ const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinat
               <span className="text-sm font-semibold">The Sentinel</span>
             </TabsTrigger>
           </TabsList>
+
+          {/* Itinerary Content */}
+          <TabsContent value="itinerary" className="flex-1 p-5 mt-0 overflow-y-auto">
+            <h3 className="font-heading font-bold text-foreground mb-0.5">Daily Itinerary</h3>
+            <p className="text-muted-foreground text-xs mb-5">Your personalized plan</p>
+
+            {!itineraryData || !Array.isArray(itineraryData) ? (
+              <SkeletonBlock />
+            ) : (
+              <div className="space-y-4">
+                {itineraryData.map((day: any) => (
+                  <div key={day.day} className="rounded-xl border border-border bg-card p-4 shadow-sm">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center">
+                        <span className="text-sm font-heading font-bold text-secondary-foreground">{day.day}</span>
+                      </div>
+                      <h4 className="font-heading font-bold text-foreground">Day {day.day}</h4>
+                    </div>
+                    <ActivityOptions
+                      options={day.activities}
+                      selectedOptionId={activitySelections[day.day] || day.activities[0]?.id}
+                      onSelect={(optionId) => handleActivitySelection(day.day, optionId)}
+                      dayNumber={day.day}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Budget Content */}
+          <TabsContent value="budget" className="flex-1 p-5 mt-0 overflow-y-auto">
+            <h3 className="font-heading font-bold text-foreground mb-0.5">The Ledger</h3>
+            <p className="text-muted-foreground text-xs mb-5">Cost breakdown for your trip</p>
+
+            {!budgetData ? (
+              <SkeletonBlock />
+            ) : (
+              <div className="space-y-6">
+                {/* Flight Estimate */}
+                {budgetData.flight_estimate && (
+                  <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-heading font-semibold text-foreground">Estimated Flights</span>
+                      <span className="text-lg font-heading font-bold text-accent">${budgetData.flight_estimate}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Tier Comparison */}
+                {budgetData.tier_comparison && (
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-heading font-semibold text-foreground">Budget Tiers</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {/* Economy Tier */}
+                      {budgetData.tier_comparison.economy && (
+                        <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+                          <div className="text-xs font-heading font-semibold text-muted-foreground mb-2">Economy</div>
+                          <div className="text-2xl font-heading font-bold text-foreground">${budgetData.tier_comparison.economy.total}</div>
+                        </div>
+                      )}
+
+                      {/* Balanced Tier */}
+                      {budgetData.tier_comparison.balanced && (
+                        <div className="rounded-xl border border-accent bg-accent/5 p-4 shadow-sm">
+                          <div className="text-xs font-heading font-semibold text-accent mb-2">Balanced</div>
+                          <div className="text-2xl font-heading font-bold text-foreground">${budgetData.tier_comparison.balanced.total}</div>
+                        </div>
+                      )}
+
+                      {/* Luxury Tier */}
+                      {budgetData.tier_comparison.luxury && (
+                        <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+                          <div className="text-xs font-heading font-semibold text-muted-foreground mb-2">Luxury</div>
+                          <div className="text-2xl font-heading font-bold text-foreground">${budgetData.tier_comparison.luxury.total}</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Daily Average */}
+                <div className="rounded-xl border border-border bg-muted/30 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-heading font-semibold text-foreground">Daily Average</span>
+                    <span className="text-lg font-heading font-bold text-secondary">
+                      ${Math.round(parseFloat(budget) / parseInt(days))}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Safety Content */}
+          <TabsContent value="safety" className="flex-1 p-5 mt-0 overflow-y-auto">
+            <h3 className="font-heading font-bold text-foreground mb-0.5">The Sentinel</h3>
+            <p className="text-xs text-muted-foreground mb-5">Safety information for {destination}</p>
+
+            {!safetyData ? (
+              <SkeletonBlock />
+            ) : (
+              <div className="space-y-6">
+                {/* Safety Score */}
+                {safetyData.score !== undefined && (
+                  <div className="rounded-xl border border-border bg-card p-6 shadow-sm text-center">
+                    <div className={`text-6xl font-heading font-bold mb-2 ${
+                      safetyData.score > 75 ? 'text-success' :
+                      safetyData.score >= 50 ? 'text-amber-500' :
+                      'text-destructive'
+                    }`}>
+                      {safetyData.score}
+                    </div>
+                    <div className="text-sm font-heading font-semibold text-muted-foreground">
+                      Safety Score out of 100
+                    </div>
+                  </div>
+                )}
+
+                {/* Emergency Contacts */}
+                {safetyData.emergency_contacts && safetyData.emergency_contacts.length > 0 && (
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-heading font-semibold text-foreground">Emergency Contacts</h4>
+                    <div className="rounded-xl border border-border bg-card divide-y divide-border overflow-hidden">
+                      {safetyData.emergency_contacts.map((contact: any, i: number) => (
+                        <div key={i} className="flex justify-between items-center p-4">
+                          <span className="text-sm font-heading font-medium text-foreground">{contact.service}</span>
+                          <span className="text-sm font-heading font-bold text-accent">{contact.number}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
       </div>
-
-      <Tabs defaultValue="itinerary" className="flex-1 overflow-hidden">
-        {/* Itinerary Content */}
-        <TabsContent value="itinerary" className="h-full p-5 mt-0 overflow-y-auto">
-          <h3 className="font-heading font-bold text-foreground mb-0.5">Daily Itinerary</h3>
-          <p className="text-muted-foreground text-xs mb-5">Your personalized plan</p>
-
-          {!itineraryData || !Array.isArray(itineraryData) ? (
-            <SkeletonBlock />
-          ) : (
-            <div className="space-y-4">
-              {itineraryData.map((day: any) => (
-                <div key={day.day} className="rounded-xl border border-border bg-card p-4 shadow-sm">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center">
-                      <span className="text-sm font-heading font-bold text-secondary-foreground">{day.day}</span>
-                    </div>
-                    <h4 className="font-heading font-bold text-foreground">Day {day.day}</h4>
-                  </div>
-                  <ActivityOptions
-                    options={day.activities}
-                    selectedOptionId={activitySelections[day.day] || day.activities[0]?.id}
-                    onSelect={(optionId) => handleActivitySelection(day.day, optionId)}
-                    dayNumber={day.day}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </TabsContent>
-
-        {/* Budget Content */}
-        <TabsContent value="budget" className="h-full p-5 mt-0 overflow-y-auto">
-           <h3 className="font-heading font-bold text-foreground mb-0.5">The Ledger</h3>
-           {/* Budget mapping logic here (consistent with previous versions) */}
-           {!budgetData ? <SkeletonBlock /> : (
-             <div className="space-y-4">
-                {budgetData.categories?.map((cat: any, i: number) => (
-                  <div key={i} className="flex justify-between p-3 border rounded-lg bg-white">
-                    <span>{cat.name}</span>
-                    <span className="font-bold text-accent">${cat.amount}</span>
-                  </div>
-                ))}
-             </div>
-           )}
-        </TabsContent>
-
-        {/* Safety Content */}
-        <TabsContent value="safety" className="h-full p-5 mt-0 overflow-y-auto">
-           <h3 className="font-heading font-bold text-foreground mb-0.5">The Sentinel</h3>
-           <p className="text-xs text-muted-foreground mb-4 font-bold">Emergency Contacts ({new Date().getFullYear()})</p>
-           {!safetyData ? <SkeletonBlock /> : (
-             <div className="space-y-3">
-                {safetyData.emergency_contacts?.map((contact: any, i: number) => (
-                  <div key={i} className="flex justify-between p-2 border-b">
-                    <span className="text-xs">{contact.service}</span>
-                    <span className="text-xs font-bold text-accent">{contact.number}</span>
-                  </div>
-                ))}
-             </div>
-           )}
-        </TabsContent>
-      </Tabs>
     </div>
   );
 };
