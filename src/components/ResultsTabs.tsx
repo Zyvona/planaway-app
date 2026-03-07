@@ -1,9 +1,12 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDays, DollarSign, ShieldCheck } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 import ArrivalCard from "@/components/ArrivalCard";
 import DayCard from "@/components/DayCard";
 import { generateItinerary } from "@/lib/itinerary-generator";
+import { useState, useRef, useEffect } from "react";
 
 const SkeletonCard = ({ lines = 3 }: { lines?: number }) => (
   <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
@@ -31,6 +34,36 @@ interface ResultsTabsProps {
 const ResultsTabs = ({ origin, destination, days, budget }: ResultsTabsProps) => {
   const totalDays = days ? parseInt(days) : 7;
   const itinerary = destination ? generateItinerary(destination, totalDays) : [];
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const dayRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+
+  const scrollToDay = (dayNumber: number) => {
+    setSelectedDay(dayNumber);
+    const element = dayRefs.current[dayNumber];
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const dayNum = parseInt(entry.target.getAttribute('data-day') || '0');
+            setSelectedDay(dayNum);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    Object.values(dayRefs.current).forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => observer.disconnect();
+  }, [itinerary]);
 
   return (
     <Tabs defaultValue="itinerary" className="flex flex-col h-full">
@@ -69,16 +102,52 @@ const ResultsTabs = ({ origin, destination, days, budget }: ResultsTabsProps) =>
 
         {origin && destination ? (
           <div className="space-y-6">
-            <ArrivalCard origin={origin} destination={destination} />
+            <ScrollArea className="w-full mb-6">
+              <div className="flex gap-2 pb-3">
+                <Button
+                  variant={selectedDay === 1 ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => scrollToDay(1)}
+                  className="font-heading font-semibold whitespace-nowrap"
+                >
+                  Day 1
+                </Button>
+                {itinerary.map((day) => (
+                  <Button
+                    key={day.dayNumber}
+                    variant={selectedDay === day.dayNumber ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => scrollToDay(day.dayNumber)}
+                    className="font-heading font-semibold whitespace-nowrap"
+                  >
+                    Day {day.dayNumber}
+                  </Button>
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+
+            <div
+              ref={(el) => { dayRefs.current[1] = el; }}
+              data-day="1"
+            >
+              <ArrivalCard origin={origin} destination={destination} />
+            </div>
 
             {itinerary.map((day) => (
-              <DayCard
+              <div
                 key={day.dayNumber}
-                dayNumber={day.dayNumber}
-                destination={destination}
-                activities={day.activities}
-                tip={day.tip}
-              />
+                ref={(el) => { dayRefs.current[day.dayNumber] = el; }}
+                data-day={day.dayNumber}
+              >
+                <DayCard
+                  dayNumber={day.dayNumber}
+                  vibeKeyword={day.vibeKeyword}
+                  neighborhood={day.neighborhood}
+                  activities={day.activities}
+                  tip={day.tip}
+                />
+              </div>
             ))}
           </div>
         ) : (

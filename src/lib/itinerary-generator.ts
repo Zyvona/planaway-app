@@ -1,15 +1,16 @@
-import { Coffee, Utensils, Camera, ShoppingBag, Landmark, Mountain, Waves, TreePine, Building2, Heart, Music, Palette } from "lucide-react";
-
 export interface Activity {
   time: string;
   title: string;
   location: string;
   cost: number;
-  icon: React.ElementType;
+  costCurrency: string;
+  emoji: string;
 }
 
 export interface DayItinerary {
   dayNumber: number;
+  vibeKeyword: string;
+  neighborhood: string;
   activities: Activity[];
   tip: string;
 }
@@ -38,63 +39,75 @@ const generateTokyoItinerary = (days: number): DayItinerary[] => {
   const baseItinerary: DayItinerary[] = [
     {
       dayNumber: 2,
+      vibeKeyword: "Heritage",
+      neighborhood: "Asakusa & Akihabara",
       activities: [
-        { time: "9:00 AM", title: "Visit Senso-ji Temple", location: "Asakusa", cost: 0, icon: Landmark },
-        { time: "12:00 PM", title: "Lunch at Traditional Restaurant", location: "Asakusa", cost: 15, icon: Utensils },
-        { time: "2:30 PM", title: "Explore Akihabara District", location: "Akihabara", cost: 20, icon: ShoppingBag },
-        { time: "6:00 PM", title: "Dinner in Shibuya", location: "Shibuya Crossing", cost: 25, icon: Utensils },
+        { time: "9:00 AM", title: "Senso-ji Temple Morning", location: "Nakamise-dori, Asakusa", cost: 0, costCurrency: "¥", emoji: "⛩️" },
+        { time: "11:30 AM", title: "Tempura at Daikokuya", location: "Asakusa 1-chome", cost: 1800, costCurrency: "¥", emoji: "🍤" },
+        { time: "2:00 PM", title: "Electric Town Gaming Arcades", location: "Chuo-dori, Akihabara", cost: 2000, costCurrency: "¥", emoji: "🎮" },
+        { time: "6:00 PM", title: "Izakaya Hopping in Yurakucho", location: "Yurakucho Gado-shita", cost: 3500, costCurrency: "¥", emoji: "🍶" },
       ],
-      tip: "Download Google Translate app for offline use. Most signs have English, but it's helpful for menus and conversations."
+      tip: "Asakusa is best before 10 AM when tour buses arrive. Take the Ginza Line directly to Akihabara - it's only 10 minutes."
     },
     {
       dayNumber: 3,
+      vibeKeyword: "Culinary",
+      neighborhood: "Tsukiji & Ginza",
       activities: [
-        { time: "8:00 AM", title: "Tsukiji Outer Market Breakfast", location: "Tsukiji", cost: 20, icon: Coffee },
-        { time: "11:00 AM", title: "Imperial Palace Gardens", location: "Chiyoda", cost: 0, icon: TreePine },
-        { time: "2:00 PM", title: "TeamLab Borderless Museum", location: "Odaiba", cost: 35, icon: Palette },
-        { time: "6:30 PM", title: "Ramen Dinner", location: "Shinjuku", cost: 12, icon: Utensils },
+        { time: "7:00 AM", title: "Tsukiji Outer Market Breakfast", location: "Tsukiji 4-chome", cost: 2500, costCurrency: "¥", emoji: "🍣" },
+        { time: "10:00 AM", title: "Imperial Palace East Gardens", location: "Kokyo Higashi Gyoen", cost: 0, costCurrency: "¥", emoji: "🏯" },
+        { time: "1:00 PM", title: "Depachika Food Hall Lunch", location: "Mitsukoshi Ginza B2F", cost: 2200, costCurrency: "¥", emoji: "🍱" },
+        { time: "4:00 PM", title: "TeamLab Planets Immersive Art", location: "Toyosu", cost: 3800, costCurrency: "¥", emoji: "🎨" },
       ],
-      tip: "Carry cash! Many small restaurants and shops don't accept credit cards. ATMs at 7-Eleven accept international cards."
+      tip: "Depachika (department store basements) offer incredible prepared foods. Buy obento for a picnic or try samples while browsing."
     },
     {
       dayNumber: 4,
+      vibeKeyword: "Nature",
+      neighborhood: "Mount Fuji & Kawaguchiko",
       activities: [
-        { time: "7:00 AM", title: "Day Trip to Mount Fuji", location: "Fujinomiya", cost: 60, icon: Mountain },
-        { time: "12:00 PM", title: "Lunch with Mountain Views", location: "Kawaguchiko", cost: 18, icon: Utensils },
-        { time: "4:00 PM", title: "Visit Oshino Hakkai", location: "Oshino Village", cost: 5, icon: Waves },
-        { time: "7:00 PM", title: "Return to Tokyo", location: "Shinjuku", cost: 0, icon: Building2 },
+        { time: "6:30 AM", title: "Highway Bus to Kawaguchiko", location: "Shinjuku Bus Terminal", cost: 2000, costCurrency: "¥", emoji: "🚌" },
+        { time: "10:00 AM", title: "Chureito Pagoda Photo Spot", location: "Arakurayama Sengen Park", cost: 0, costCurrency: "¥", emoji: "🗻" },
+        { time: "1:00 PM", title: "Hoto Noodles at Kosaku", location: "Kawaguchiko Station Area", cost: 1400, costCurrency: "¥", emoji: "🍜" },
+        { time: "3:30 PM", title: "Lake Kawaguchiko Cruise", location: "Kawaguchiko Pier", cost: 1000, costCurrency: "¥", emoji: "⛵" },
       ],
-      tip: "Book Mount Fuji tours in advance. Weather can be unpredictable, so bring layers and check forecasts."
+      tip: "Book your bus tickets online 1 month in advance through Fujikyu. Weather is unpredictable - check forecasts and have a backup plan."
     },
     {
       dayNumber: 5,
+      vibeKeyword: "Youth Culture",
+      neighborhood: "Harajuku & Shibuya",
       activities: [
-        { time: "9:30 AM", title: "Meiji Shrine Visit", location: "Harajuku", cost: 0, icon: Landmark },
-        { time: "11:30 AM", title: "Harajuku Shopping & Street Food", location: "Takeshita Street", cost: 25, icon: ShoppingBag },
-        { time: "3:00 PM", title: "Yoyogi Park Relaxation", location: "Shibuya", cost: 0, icon: TreePine },
-        { time: "6:00 PM", title: "Izakaya Dinner Experience", location: "Ebisu", cost: 30, icon: Utensils },
+        { time: "9:00 AM", title: "Meiji Jingu Shrine Walk", location: "Yoyogi Park Entrance", cost: 0, costCurrency: "¥", emoji: "⛩️" },
+        { time: "11:00 AM", title: "Takeshita-dori Street Snacks", location: "Harajuku Takeshita Street", cost: 1500, costCurrency: "¥", emoji: "🍦" },
+        { time: "2:00 PM", title: "Cat Street Vintage Shopping", location: "Cat Street, Ura-Harajuku", cost: 4000, costCurrency: "¥", emoji: "👘" },
+        { time: "6:30 PM", title: "Shibuya Sky Observatory Sunset", location: "Shibuya Scramble Square", cost: 2000, costCurrency: "¥", emoji: "🌆" },
       ],
-      tip: "Sunday is the best day for people-watching in Yoyogi Park. You'll see musicians, dancers, and unique fashion styles."
+      tip: "Visit on Sunday to see cosplayers in Yoyogi Park. Cat Street has better shopping than Takeshita-dori with fewer crowds."
     },
     {
       dayNumber: 6,
+      vibeKeyword: "Nightlife",
+      neighborhood: "Shinjuku & Golden Gai",
       activities: [
-        { time: "10:00 AM", title: "Ueno Park & Museums", location: "Ueno", cost: 10, icon: Camera },
-        { time: "1:00 PM", title: "Ameya-Yokocho Market Lunch", location: "Ueno", cost: 15, icon: Utensils },
-        { time: "3:30 PM", title: "Tokyo Skytree Observatory", location: "Sumida", cost: 25, icon: Building2 },
-        { time: "7:00 PM", title: "Asakusa Evening Walk", location: "Asakusa", cost: 0, icon: Camera },
+        { time: "10:00 AM", title: "Shinjuku Gyoen National Garden", location: "Shinjuku Gyoen", cost: 500, costCurrency: "¥", emoji: "🌸" },
+        { time: "1:00 PM", title: "Tonkatsu at Maisen", location: "Omotesando", cost: 1800, costCurrency: "¥", emoji: "🥩" },
+        { time: "3:00 PM", title: "Tokyo Metropolitan Building", location: "Nishi-Shinjuku", cost: 0, costCurrency: "¥", emoji: "🏢" },
+        { time: "8:00 PM", title: "Golden Gai Bar Hopping", location: "Kabukicho 1-chome", cost: 3000, costCurrency: "¥", emoji: "🍺" },
       ],
-      tip: "Visit Tokyo Skytree at sunset for the best views. The city lights starting to glow are magical."
+      tip: "Golden Gai bars charge a cover (usually ¥500-1000). Choose bars with English signs if nervous. Omoide Yokocho nearby has great yakitori stalls."
     },
     {
       dayNumber: 7,
+      vibeKeyword: "Farewell",
+      neighborhood: "Roppongi & Tokyo Station",
       activities: [
-        { time: "9:00 AM", title: "Last-minute Shopping", location: "Ginza", cost: 40, icon: ShoppingBag },
-        { time: "12:00 PM", title: "Final Sushi Experience", location: "Ginza", cost: 35, icon: Utensils },
-        { time: "3:00 PM", title: "Souvenir Shopping", location: "Tokyo Station", cost: 30, icon: ShoppingBag },
-        { time: "6:00 PM", title: "Farewell Dinner", location: "Roppongi", cost: 40, icon: Heart },
+        { time: "10:00 AM", title: "Mori Art Museum", location: "Roppongi Hills", cost: 1800, costCurrency: "¥", emoji: "🎨" },
+        { time: "1:00 PM", title: "Final Sushi at Sushi Zanmai", location: "Roppongi Crossing", cost: 4000, costCurrency: "¥", emoji: "🍣" },
+        { time: "3:30 PM", title: "Tokyo Station Souvenir Shopping", location: "Tokyo Station Gransta", cost: 5000, costCurrency: "¥", emoji: "🎁" },
+        { time: "6:00 PM", title: "Yakitori Under the Tracks", location: "Yurakucho Gado-shita", cost: 2500, costCurrency: "¥", emoji: "🍢" },
       ],
-      tip: "Pack souvenirs carefully. Tokyo Station has excellent shops for last-minute gifts and snacks to bring home."
+      tip: "Tokyo Station Gransta (basement) has the best souvenirs: Tokyo Banana, Shiroi Koibito, and regional sake. Perfect for last-minute gifts."
     }
   ];
 
@@ -105,63 +118,75 @@ const generateLondonItinerary = (days: number): DayItinerary[] => {
   const baseItinerary: DayItinerary[] = [
     {
       dayNumber: 2,
+      vibeKeyword: "Royal",
+      neighborhood: "Tower & Borough",
       activities: [
-        { time: "9:00 AM", title: "Tower of London Visit", location: "Tower Hill", cost: 35, icon: Landmark },
-        { time: "12:30 PM", title: "Lunch at Borough Market", location: "Southwark", cost: 18, icon: Utensils },
-        { time: "2:30 PM", title: "Tower Bridge Walk", location: "Tower Bridge", cost: 0, icon: Camera },
-        { time: "5:00 PM", title: "Pub Dinner Experience", location: "Covent Garden", cost: 25, icon: Utensils },
+        { time: "9:00 AM", title: "Tower of London Crown Jewels", location: "Tower Hill, EC3", cost: 35, costCurrency: "£", emoji: "👑" },
+        { time: "12:30 PM", title: "Borough Market Street Food", location: "Southwark, SE1", cost: 18, costCurrency: "£", emoji: "🥧" },
+        { time: "2:30 PM", title: "Tower Bridge Glass Floor Walk", location: "Tower Bridge Road", cost: 12, costCurrency: "£", emoji: "🌉" },
+        { time: "6:00 PM", title: "Historic Pub at The George Inn", location: "Borough High Street", cost: 25, costCurrency: "£", emoji: "🍺" },
       ],
-      tip: "Book major attractions online in advance to skip queues. London Eye and Tower of London can have 2+ hour waits."
+      tip: "Book Tower of London tickets online for Beefeater tour at 10 AM. Borough Market is best Thursday-Saturday."
     },
     {
       dayNumber: 3,
+      vibeKeyword: "Culture",
+      neighborhood: "Bloomsbury & Soho",
       activities: [
-        { time: "10:00 AM", title: "British Museum", location: "Bloomsbury", cost: 0, icon: Palette },
-        { time: "1:00 PM", title: "Lunch in Soho", location: "Soho", cost: 20, icon: Utensils },
-        { time: "3:00 PM", title: "Buckingham Palace", location: "Westminster", cost: 0, icon: Landmark },
-        { time: "6:30 PM", title: "West End Show", location: "Leicester Square", cost: 45, icon: Music },
+        { time: "10:00 AM", title: "British Museum Rosetta Stone", location: "Great Russell Street, WC1", cost: 0, costCurrency: "£", emoji: "🏛️" },
+        { time: "1:00 PM", title: "Dishoom Bombay Brunch", location: "Covent Garden, WC2", cost: 22, costCurrency: "£", emoji: "🍛" },
+        { time: "3:00 PM", title: "Changing of the Guard", location: "Buckingham Palace, SW1", cost: 0, costCurrency: "£", emoji: "💂" },
+        { time: "7:30 PM", title: "West End Theatre Show", location: "Leicester Square, WC2", cost: 45, costCurrency: "£", emoji: "🎭" },
       ],
-      tip: "Most major museums are free! British Museum, National Gallery, and Tate Modern cost nothing to enter."
+      tip: "British Museum is free but book a timed slot online. TodayTix app has £20-30 West End tickets released daily at 10 AM."
     },
     {
       dayNumber: 4,
+      vibeKeyword: "Heritage",
+      neighborhood: "Westminster & Kensington",
       activities: [
-        { time: "9:00 AM", title: "Westminster Abbey", location: "Westminster", cost: 27, icon: Landmark },
-        { time: "11:30 AM", title: "Big Ben & Parliament", location: "Westminster", cost: 0, icon: Camera },
-        { time: "1:00 PM", title: "Afternoon Tea", location: "Kensington", cost: 35, icon: Coffee },
-        { time: "4:00 PM", title: "Hyde Park Stroll", location: "Hyde Park", cost: 0, icon: TreePine },
+        { time: "9:00 AM", title: "Westminster Abbey Poets' Corner", location: "Parliament Square, SW1", cost: 27, costCurrency: "£", emoji: "⛪" },
+        { time: "11:30 AM", title: "Houses of Parliament Exterior", location: "Westminster Bridge", cost: 0, costCurrency: "£", emoji: "🏛️" },
+        { time: "2:00 PM", title: "Afternoon Tea at Biscuiteers", location: "Notting Hill, W11", cost: 35, costCurrency: "£", emoji: "☕" },
+        { time: "4:30 PM", title: "Kensington Gardens Serpentine", location: "Hyde Park, W2", cost: 0, costCurrency: "£", emoji: "🦢" },
       ],
-      tip: "Afternoon tea is a must-try experience. Book in advance for popular spots like Sketch or The Ritz."
+      tip: "Skip overpriced hotel tea and try Biscuiteers for Instagram-worthy cookies. Hyde Park is massive - rent a Boris bike to explore."
     },
     {
       dayNumber: 5,
+      vibeKeyword: "Alternative",
+      neighborhood: "Camden & Kings Cross",
       activities: [
-        { time: "10:00 AM", title: "Camden Market Exploring", location: "Camden Town", cost: 15, icon: ShoppingBag },
-        { time: "1:00 PM", title: "Street Food Lunch", location: "Camden Lock", cost: 12, icon: Utensils },
-        { time: "3:00 PM", title: "Regent's Canal Walk", location: "Camden to Kings Cross", cost: 0, icon: Waves },
-        { time: "6:00 PM", title: "King's Cross Dining", location: "Coal Drops Yard", cost: 30, icon: Utensils },
+        { time: "10:00 AM", title: "Camden Lock Market Vintage Finds", location: "Camden Lock Place, NW1", cost: 20, costCurrency: "£", emoji: "🎸" },
+        { time: "1:00 PM", title: "Street Food at Camden Market", location: "Buck Street Market, NW1", cost: 12, costCurrency: "£", emoji: "🌮" },
+        { time: "3:00 PM", title: "Regent's Canal Towpath Walk", location: "Camden to Kings Cross", cost: 0, costCurrency: "£", emoji: "🚶" },
+        { time: "6:00 PM", title: "Coal Drops Yard Modern British", location: "Granary Square, N1C", cost: 30, costCurrency: "£", emoji: "🍽️" },
       ],
-      tip: "Camden Market is best on weekends. It's vibrant, eclectic, and perfect for unique souvenirs."
+      tip: "Camden is best on weekends but incredibly crowded. Walk the canal to Kings Cross for a peaceful contrast to market chaos."
     },
     {
       dayNumber: 6,
+      vibeKeyword: "Panoramic",
+      neighborhood: "Notting Hill & City",
       activities: [
-        { time: "9:30 AM", title: "Notting Hill Exploration", location: "Notting Hill", cost: 0, icon: Camera },
-        { time: "12:00 PM", title: "Portobello Road Market", location: "Notting Hill", cost: 20, icon: ShoppingBag },
-        { time: "3:00 PM", title: "Sky Garden Views", location: "City of London", cost: 0, icon: Building2 },
-        { time: "7:00 PM", title: "Thames River Cruise", location: "Westminster Pier", cost: 25, icon: Waves },
+        { time: "9:30 AM", title: "Portobello Road Antiques", location: "Notting Hill, W11", cost: 25, costCurrency: "£", emoji: "🎨" },
+        { time: "12:00 PM", title: "Brunch at Granger & Co", location: "Westbourne Grove, W11", cost: 18, costCurrency: "£", emoji: "🥑" },
+        { time: "3:00 PM", title: "Sky Garden Free Observatory", location: "20 Fenchurch Street, EC3", cost: 0, costCurrency: "£", emoji: "🌆" },
+        { time: "7:00 PM", title: "Thames River Evening Cruise", location: "Westminster Pier, SW1", cost: 25, costCurrency: "£", emoji: "🛳️" },
       ],
-      tip: "Sky Garden is free but requires advance booking. It offers stunning 360° views of London."
+      tip: "Sky Garden is free but requires advance booking. Book exactly 3 weeks ahead when slots open. Sunset time is most popular."
     },
     {
       dayNumber: 7,
+      vibeKeyword: "Farewell",
+      neighborhood: "Shoreditch & South Bank",
       activities: [
-        { time: "10:00 AM", title: "Last-minute Shopping", location: "Oxford Street", cost: 50, icon: ShoppingBag },
-        { time: "1:00 PM", title: "Lunch at Dishoom", location: "Covent Garden", cost: 22, icon: Utensils },
-        { time: "3:30 PM", title: "Final Museum Visit", location: "South Kensington", cost: 0, icon: Palette },
-        { time: "6:30 PM", title: "Farewell Dinner", location: "Shoreditch", cost: 35, icon: Heart },
+        { time: "10:00 AM", title: "Brick Lane Sunday Market", location: "Brick Lane, E1", cost: 15, costCurrency: "£", emoji: "🎨" },
+        { time: "1:00 PM", title: "Beigel Bake 24hr Bakery", location: "Brick Lane, E1", cost: 5, costCurrency: "£", emoji: "🥯" },
+        { time: "3:00 PM", title: "Tate Modern Free Galleries", location: "Bankside, SE1", cost: 0, costCurrency: "£", emoji: "🖼️" },
+        { time: "6:30 PM", title: "Farewell Rooftop Dinner", location: "OXO Tower, SE1", cost: 45, costCurrency: "£", emoji: "🌃" },
       ],
-      tip: "Keep Sunday in mind for planning - many shops have shorter hours and some attractions close early."
+      tip: "Brick Lane is Sunday-only for the full experience. Beigel Bake's salt beef beigel is legendary and only £5."
     }
   ];
 
@@ -172,63 +197,75 @@ const generateParisItinerary = (days: number): DayItinerary[] => {
   const baseItinerary: DayItinerary[] = [
     {
       dayNumber: 2,
+      vibeKeyword: "Iconic",
+      neighborhood: "Tour Eiffel & Trocadéro",
       activities: [
-        { time: "9:00 AM", title: "Eiffel Tower Visit", location: "Champ de Mars", cost: 28, icon: Landmark },
-        { time: "12:00 PM", title: "Café Lunch", location: "Trocadéro", cost: 18, icon: Coffee },
-        { time: "2:30 PM", title: "Seine River Cruise", location: "Port de la Bourdonnais", cost: 15, icon: Waves },
-        { time: "6:00 PM", title: "Bistro Dinner", location: "Latin Quarter", cost: 30, icon: Utensils },
+        { time: "8:30 AM", title: "Tour Eiffel Summit Ascent", location: "Champ de Mars, 7e", cost: 28, costCurrency: "€", emoji: "🗼" },
+        { time: "11:30 AM", title: "Café Crème at Café de l'Homme", location: "Place du Trocadéro, 16e", cost: 18, costCurrency: "€", emoji: "☕" },
+        { time: "2:00 PM", title: "Bateaux Mouches Seine Cruise", location: "Pont de l'Alma, 8e", cost: 15, costCurrency: "€", emoji: "🚢" },
+        { time: "7:00 PM", title: "Bistrot Paul Bert Classic", location: "Rue Paul Bert, 11e", cost: 35, costCurrency: "€", emoji: "🥩" },
       ],
-      tip: "Book Eiffel Tower tickets online weeks in advance. Walk-up tickets sell out quickly, especially in summer."
+      tip: "Book Eiffel Tower tickets 60 days in advance online. Summit sells out instantly. Visit at opening (8:30 AM) to avoid lines."
     },
     {
       dayNumber: 3,
+      vibeKeyword: "Artistic",
+      neighborhood: "Louvre & Jardin des Tuileries",
       activities: [
-        { time: "9:00 AM", title: "Louvre Museum", location: "Palais Royal", cost: 20, icon: Palette },
-        { time: "1:00 PM", title: "Jardin des Tuileries Picnic", location: "Tuileries", cost: 12, icon: Coffee },
-        { time: "3:00 PM", title: "Champs-Élysées Walk", location: "8th Arrondissement", cost: 0, icon: Camera },
-        { time: "6:00 PM", title: "Arc de Triomphe", location: "Place Charles de Gaulle", cost: 13, icon: Landmark },
+        { time: "9:00 AM", title: "Musée du Louvre Mona Lisa", location: "Rue de Rivoli, 1er", cost: 22, costCurrency: "€", emoji: "🎨" },
+        { time: "1:00 PM", title: "Jardin des Tuileries Picnic", location: "Place de la Concorde, 1er", cost: 15, costCurrency: "€", emoji: "🧺" },
+        { time: "3:30 PM", title: "Champs-Élysées to Arc de Triomphe", location: "Avenue des Champs-Élysées, 8e", cost: 13, costCurrency: "€", emoji: "🏛️" },
+        { time: "6:30 PM", title: "Wine Bar at Juveniles", location: "Rue de Richelieu, 1er", cost: 25, costCurrency: "€", emoji: "🍷" },
       ],
-      tip: "Buy a fresh baguette, cheese, and wine from a local shop for a perfect Parisian picnic in the gardens."
+      tip: "Buy picnic supplies at Monoprix: baguette, cheese, wine, fruit. Sit by the fountain in Tuileries for peak Parisian vibes."
     },
     {
       dayNumber: 4,
+      vibeKeyword: "Bohemian",
+      neighborhood: "Montmartre & Pigalle",
       activities: [
-        { time: "10:00 AM", title: "Montmartre & Sacré-Cœur", location: "Montmartre", cost: 0, icon: Landmark },
-        { time: "12:30 PM", title: "Artist Square Lunch", location: "Place du Tertre", cost: 22, icon: Utensils },
-        { time: "3:00 PM", title: "Musée d'Orsay", location: "Left Bank", cost: 16, icon: Palette },
-        { time: "6:30 PM", title: "Saint-Germain Dinner", location: "6th Arrondissement", cost: 35, icon: Utensils },
+        { time: "8:00 AM", title: "Sacré-Cœur Sunrise Views", location: "Parvis du Sacré-Cœur, 18e", cost: 0, costCurrency: "€", emoji: "⛪" },
+        { time: "10:30 AM", title: "Place du Tertre Artist Square", location: "Montmartre, 18e", cost: 0, costCurrency: "€", emoji: "🎨" },
+        { time: "1:00 PM", title: "Le Consulat Croque Monsieur", location: "Rue Norvins, 18e", cost: 22, costCurrency: "€", emoji: "🥪" },
+        { time: "3:00 PM", title: "Musée d'Orsay Impressionists", location: "Quai d'Orsay, 7e", cost: 16, costCurrency: "€", emoji: "🖼️" },
       ],
-      tip: "Visit Montmartre early in the morning to avoid crowds and get the best photos at Sacré-Cœur."
+      tip: "Montmartre is touristy but magical early morning. Skip artist portraits - they're overpriced. Find the I Love You Wall for free."
     },
     {
       dayNumber: 5,
+      vibeKeyword: "Grandeur",
+      neighborhood: "Château de Versailles",
       activities: [
-        { time: "9:00 AM", title: "Versailles Palace", location: "Versailles", cost: 20, icon: Landmark },
-        { time: "12:00 PM", title: "Lunch at Versailles", location: "Versailles Town", cost: 25, icon: Utensils },
-        { time: "3:00 PM", title: "Palace Gardens Walk", location: "Versailles Gardens", cost: 0, icon: TreePine },
-        { time: "6:00 PM", title: "Return to Paris", location: "Gare Saint-Lazare", cost: 0, icon: Building2 },
+        { time: "8:00 AM", title: "RER C Train to Versailles", location: "Gare d'Austerlitz, 13e", cost: 7, costCurrency: "€", emoji: "🚂" },
+        { time: "9:30 AM", title: "Hall of Mirrors Palace Tour", location: "Place d'Armes, Versailles", cost: 20, costCurrency: "€", emoji: "👑" },
+        { time: "12:30 PM", title: "La Flottille Canalside Lunch", location: "Versailles Gardens", cost: 25, costCurrency: "€", emoji: "🍽️" },
+        { time: "3:00 PM", title: "Marie Antoinette's Hamlet", location: "Versailles Estate", cost: 0, costCurrency: "€", emoji: "🏡" },
       ],
-      tip: "Versailles is massive - wear comfortable shoes! The gardens alone can take hours to explore."
+      tip: "Arrive at 9 AM opening time. Palace takes 2 hours, gardens need 3+ hours. Rent golf cart or bike to cover the massive grounds."
     },
     {
       dayNumber: 6,
+      vibeKeyword: "Trendy",
+      neighborhood: "Le Marais & Île de la Cité",
       activities: [
-        { time: "10:00 AM", title: "Le Marais Exploration", location: "Le Marais", cost: 0, icon: Camera },
-        { time: "1:00 PM", title: "Falafel Lunch", location: "Rue des Rosiers", cost: 10, icon: Utensils },
-        { time: "3:00 PM", title: "Notre-Dame Area", location: "Île de la Cité", cost: 0, icon: Landmark },
-        { time: "6:00 PM", title: "Latin Quarter Evening", location: "5th Arrondissement", cost: 28, icon: Music },
+        { time: "10:00 AM", title: "Le Marais Vintage Boutiques", location: "Rue des Francs-Bourgeois, 3e", cost: 30, costCurrency: "€", emoji: "👗" },
+        { time: "1:00 PM", title: "L'As du Fallafel Lunch Queue", location: "Rue des Rosiers, 4e", cost: 10, costCurrency: "€", emoji: "🥙" },
+        { time: "3:00 PM", title: "Notre-Dame Cathedral Exterior", location: "Parvis Notre-Dame, 4e", cost: 0, costCurrency: "€", emoji: "⛪" },
+        { time: "7:00 PM", title: "Latin Quarter Jazz at Caveau", location: "Rue de la Huchette, 5e", cost: 25, costCurrency: "€", emoji: "🎷" },
       ],
-      tip: "Le Marais is perfect for vintage shopping and has some of the best falafel in Paris on Rue des Rosiers."
+      tip: "L'As du Fallafel line moves fast - worth the 20-minute wait. Free Concept Store (rue de Sévigné) has cool Parisian design souvenirs."
     },
     {
       dayNumber: 7,
+      vibeKeyword: "Farewell",
+      neighborhood: "Saint-Germain & Eiffel",
       activities: [
-        { time: "10:00 AM", title: "Final Shopping", location: "Le Bon Marché", cost: 40, icon: ShoppingBag },
-        { time: "1:00 PM", title: "Elegant Lunch", location: "Saint-Germain-des-Prés", cost: 35, icon: Utensils },
-        { time: "3:30 PM", title: "Luxembourg Gardens", location: "6th Arrondissement", cost: 0, icon: TreePine },
-        { time: "6:30 PM", title: "Farewell Dinner", location: "Eiffel Tower View", cost: 50, icon: Heart },
+        { time: "10:00 AM", title: "Café de Flore Philosophers' Table", location: "Boulevard Saint-Germain, 6e", cost: 12, costCurrency: "€", emoji: "☕" },
+        { time: "12:00 PM", title: "Bon Marché Gourmet Shopping", location: "Rue de Sèvres, 7e", cost: 40, costCurrency: "€", emoji: "🛍️" },
+        { time: "3:00 PM", title: "Jardin du Luxembourg Farewell", location: "6e arrondissement", cost: 0, costCurrency: "€", emoji: "🌳" },
+        { time: "8:00 PM", title: "Eiffel Tower Sparkling Show", location: "Champ de Mars, 7e", cost: 0, costCurrency: "€", emoji: "✨" },
       ],
-      tip: "End your trip with a view of the sparkling Eiffel Tower at night - it glitters every hour after sunset."
+      tip: "Eiffel Tower sparkles for 5 minutes every hour after sunset. Best viewing from Trocadéro or Champ de Mars lawn with wine."
     }
   ];
 
@@ -239,63 +276,75 @@ const generateNewYorkItinerary = (days: number): DayItinerary[] => {
   const baseItinerary: DayItinerary[] = [
     {
       dayNumber: 2,
+      vibeKeyword: "Midtown",
+      neighborhood: "Central Park & Upper West Side",
       activities: [
-        { time: "9:00 AM", title: "Central Park Walk", location: "Central Park", cost: 0, icon: TreePine },
-        { time: "12:00 PM", title: "NYC Pizza Lunch", location: "Upper West Side", cost: 15, icon: Utensils },
-        { time: "2:00 PM", title: "Metropolitan Museum", location: "Upper East Side", cost: 30, icon: Palette },
-        { time: "6:00 PM", title: "Times Square Evening", location: "Midtown", cost: 0, icon: Camera },
+        { time: "8:00 AM", title: "Central Park Bow Bridge Sunrise", location: "Mid-Park at 74th Street", cost: 0, costCurrency: "$", emoji: "🌳" },
+        { time: "11:00 AM", title: "Levain Bakery Cookie", location: "Amsterdam Ave & 74th", cost: 6, costCurrency: "$", emoji: "🍪" },
+        { time: "1:00 PM", title: "Metropolitan Museum Met Collection", location: "Fifth Avenue at 82nd", cost: 30, costCurrency: "$", emoji: "🏛️" },
+        { time: "6:00 PM", title: "Times Square Neon Night Walk", location: "Broadway & 42nd Street", cost: 0, costCurrency: "$", emoji: "🌃" },
       ],
-      tip: "Get a MetroCard for unlimited subway rides. It's the fastest and cheapest way to explore NYC."
+      tip: "Get a 7-day unlimited MetroCard ($34) if staying longer. Way cheaper than individual rides and includes buses."
     },
     {
       dayNumber: 3,
+      vibeKeyword: "Liberty",
+      neighborhood: "Lower Manhattan & Brooklyn",
       activities: [
-        { time: "9:00 AM", title: "Statue of Liberty & Ellis Island", location: "Battery Park", cost: 24, icon: Landmark },
-        { time: "2:00 PM", title: "Wall Street & Charging Bull", location: "Financial District", cost: 0, icon: Building2 },
-        { time: "4:00 PM", title: "Brooklyn Bridge Walk", location: "Brooklyn Bridge", cost: 0, icon: Camera },
-        { time: "7:00 PM", title: "DUMBO Dinner", location: "Brooklyn", cost: 35, icon: Utensils },
+        { time: "8:30 AM", title: "Statue of Liberty Crown Reserve", location: "Liberty Island Ferry", cost: 24, costCurrency: "$", emoji: "🗽" },
+        { time: "1:00 PM", title: "Stone Street Oysters & Beer", location: "Financial District, FiDi", cost: 35, costCurrency: "$", emoji: "🦪" },
+        { time: "3:30 PM", title: "Brooklyn Bridge Pedestrian Walk", location: "City Hall Park entrance", cost: 0, costCurrency: "$", emoji: "🌉" },
+        { time: "6:00 PM", title: "Grimaldi's Coal Oven Pizza", location: "Front Street, DUMBO", cost: 25, costCurrency: "$", emoji: "🍕" },
       ],
-      tip: "Book Statue of Liberty tickets early online. Ferry tickets sell out, especially during summer months."
+      tip: "Book Statue Crown tickets 3 months ahead. They sell out instantly. Pedestal access is easier to get and still amazing views."
     },
     {
       dayNumber: 4,
+      vibeKeyword: "Memorial",
+      neighborhood: "Financial District & Chelsea",
       activities: [
-        { time: "10:00 AM", title: "9/11 Memorial & Museum", location: "Financial District", cost: 28, icon: Landmark },
-        { time: "1:00 PM", title: "Chelsea Market Lunch", location: "Chelsea", cost: 18, icon: Utensils },
-        { time: "3:00 PM", title: "High Line Walk", location: "Chelsea to Hudson Yards", cost: 0, icon: TreePine },
-        { time: "6:00 PM", title: "Greenwich Village Dinner", location: "West Village", cost: 32, icon: Utensils },
+        { time: "9:00 AM", title: "9/11 Memorial Reflecting Pools", location: "World Trade Center, FiDi", cost: 0, costCurrency: "$", emoji: "🕊️" },
+        { time: "11:00 AM", title: "Oculus Shopping Architecture", location: "WTC Transportation Hub", cost: 0, costCurrency: "$", emoji: "🏗️" },
+        { time: "1:00 PM", title: "Chelsea Market Lobster Roll", location: "9th Avenue & 15th Street", cost: 28, costCurrency: "$", emoji: "🦞" },
+        { time: "3:00 PM", title: "High Line Elevated Park Walk", location: "Gansevoort to 34th Street", cost: 0, costCurrency: "$", emoji: "🌿" },
       ],
-      tip: "The High Line is a beautiful elevated park. Visit in late afternoon for golden hour photos."
+      tip: "High Line is beautiful but crowded midday. Go early morning or sunset golden hour. Exit at 16th Street for good cafes."
     },
     {
       dayNumber: 5,
+      vibeKeyword: "Broadway",
+      neighborhood: "Midtown & Theater District",
       activities: [
-        { time: "9:30 AM", title: "Empire State Building", location: "Midtown", cost: 44, icon: Building2 },
-        { time: "12:00 PM", title: "Lunch at Bryant Park", location: "Midtown", cost: 16, icon: Coffee },
-        { time: "2:00 PM", title: "MoMA Visit", location: "Midtown", cost: 25, icon: Palette },
-        { time: "6:00 PM", title: "Broadway Show", location: "Theater District", cost: 80, icon: Music },
+        { time: "9:00 AM", title: "Empire State 86th Floor Observatory", location: "Fifth Avenue & 34th Street", cost: 44, costCurrency: "$", emoji: "🏙️" },
+        { time: "12:00 PM", title: "Bryant Park Le Panier Picnic", location: "42nd Street & 6th Avenue", cost: 18, costCurrency: "$", emoji: "🥖" },
+        { time: "2:00 PM", title: "MoMA Modern Art Starry Night", location: "53rd Street & 5th Avenue", cost: 25, costCurrency: "$", emoji: "🎨" },
+        { time: "7:30 PM", title: "Broadway Show Orchestra Seats", location: "Theater District, 40s", cost: 80, costCurrency: "$", emoji: "🎭" },
       ],
-      tip: "Buy Broadway tickets at TKTS booth in Times Square for same-day discounts up to 50% off."
+      tip: "TodayTix app releases rush tickets at 10 AM daily. TKTS booth in Times Square offers 20-50% off same-day shows."
     },
     {
       dayNumber: 6,
+      vibeKeyword: "Downtown",
+      neighborhood: "SoHo & Lower East Side",
       activities: [
-        { time: "10:00 AM", title: "SoHo Shopping", location: "SoHo", cost: 40, icon: ShoppingBag },
-        { time: "1:00 PM", title: "Little Italy Lunch", location: "Little Italy", cost: 25, icon: Utensils },
-        { time: "3:00 PM", title: "Chinatown Exploration", location: "Chinatown", cost: 10, icon: Camera },
-        { time: "6:00 PM", title: "Lower East Side Evening", location: "LES", cost: 30, icon: Music },
+        { time: "10:00 AM", title: "SoHo Cast Iron Architecture Walk", location: "Greene Street Historic District", cost: 0, costCurrency: "$", emoji: "🏛️" },
+        { time: "1:00 PM", title: "Prince Street Pizza Pepperoni Square", location: "Prince & Mott, Nolita", cost: 6, costCurrency: "$", emoji: "🍕" },
+        { time: "3:00 PM", title: "Tenement Museum Immigration Stories", location: "Orchard Street, LES", cost: 30, costCurrency: "$", emoji: "🏠" },
+        { time: "7:00 PM", title: "Katz's Delicatessen Pastrami", location: "Houston & Ludlow, LES", cost: 25, costCurrency: "$", emoji: "🥪" },
       ],
-      tip: "SoHo has great shopping but also amazing street art. Keep your eyes up for beautiful cast-iron architecture."
+      tip: "SoHo shopping is expensive but window browsing is free. McNally Jackson bookstore (Prince St) is perfect for rainy afternoon."
     },
     {
       dayNumber: 7,
+      vibeKeyword: "Farewell",
+      neighborhood: "Rockefeller & Grand Central",
       activities: [
-        { time: "10:00 AM", title: "Fifth Avenue Shopping", location: "Midtown", cost: 50, icon: ShoppingBag },
-        { time: "1:00 PM", title: "Lunch at Grand Central", location: "Grand Central Terminal", cost: 20, icon: Utensils },
-        { time: "3:00 PM", title: "Rockefeller Center", location: "Midtown", cost: 40, icon: Building2 },
-        { time: "6:30 PM", title: "Farewell Dinner", location: "Rooftop Restaurant", cost: 60, icon: Heart },
+        { time: "10:00 AM", title: "Grand Central Whispering Gallery", location: "42nd Street & Park Avenue", cost: 0, costCurrency: "$", emoji: "🚂" },
+        { time: "12:00 PM", title: "Grand Central Oyster Bar", location: "Lower Level, Grand Central", cost: 35, costCurrency: "$", emoji: "🦪" },
+        { time: "2:00 PM", title: "Top of the Rock Observation Deck", location: "Rockefeller Center, 50th St", cost: 40, costCurrency: "$", emoji: "🌆" },
+        { time: "7:00 PM", title: "Farewell Rooftop at 230 Fifth", location: "Fifth Avenue & 27th Street", cost: 20, costCurrency: "$", emoji: "🍸" },
       ],
-      tip: "Visit Grand Central Terminal's Whispering Gallery - stand in opposite corners and whisper to each other!"
+      tip: "Top of the Rock has better Empire State views than Empire State itself. Sunset time slots book out - reserve 2 weeks ahead."
     }
   ];
 
@@ -306,63 +355,75 @@ const generateBangkokItinerary = (days: number): DayItinerary[] => {
   const baseItinerary: DayItinerary[] = [
     {
       dayNumber: 2,
+      vibeKeyword: "Royal",
+      neighborhood: "Rattanakosin Island",
       activities: [
-        { time: "8:00 AM", title: "Grand Palace Visit", location: "Phra Nakhon", cost: 15, icon: Landmark },
-        { time: "11:30 AM", title: "Wat Pho Temple", location: "Phra Nakhon", cost: 5, icon: Landmark },
-        { time: "1:00 PM", title: "Thai Lunch", location: "Tha Tien", cost: 8, icon: Utensils },
-        { time: "4:00 PM", title: "Chao Phraya River Cruise", location: "Tha Maharaj", cost: 10, icon: Waves },
+        { time: "8:00 AM", title: "Grand Palace Emerald Buddha", location: "Na Phra Lan Road, Phra Nakhon", cost: 500, costCurrency: "฿", emoji: "👑" },
+        { time: "11:00 AM", title: "Wat Pho Reclining Buddha", location: "Chetuphon Road, Phra Nakhon", cost: 200, costCurrency: "฿", emoji: "🛕" },
+        { time: "1:00 PM", title: "Tha Tien Boat Noodles", location: "Maharat Road Pier", cost: 80, costCurrency: "฿", emoji: "🍜" },
+        { time: "4:00 PM", title: "Chao Phraya River Express Boat", location: "Tha Maharaj Pier", cost: 50, costCurrency: "฿", emoji: "🚤" },
       ],
-      tip: "Dress modestly for temples - cover shoulders and knees. Many temples provide wraps at the entrance."
+      tip: "Grand Palace dress code is strict: covered shoulders and knees. They sell wraps at entrance but bring your own to save money."
     },
     {
       dayNumber: 3,
+      vibeKeyword: "Shopping",
+      neighborhood: "Chatuchak & Ari",
       activities: [
-        { time: "9:00 AM", title: "Chatuchak Weekend Market", location: "Chatuchak", cost: 20, icon: ShoppingBag },
-        { time: "12:00 PM", title: "Market Food Sampling", location: "Chatuchak", cost: 6, icon: Utensils },
-        { time: "3:00 PM", title: "Jim Thompson House", location: "Wang Mai", cost: 7, icon: Palette },
-        { time: "6:00 PM", title: "Dinner at Siam Square", location: "Pathum Wan", cost: 12, icon: Utensils },
+        { time: "9:00 AM", title: "Chatuchak Weekend Market Maze", location: "Kamphaeng Phet 2 Road", cost: 500, costCurrency: "฿", emoji: "🛍️" },
+        { time: "12:00 PM", title: "Market Mango Sticky Rice", location: "Chatuchak Section 26", cost: 80, costCurrency: "฿", emoji: "🥭" },
+        { time: "3:00 PM", title: "Or Tor Kor Fresh Market", location: "Chatuchak Weekend Market", cost: 200, costCurrency: "฿", emoji: "🍊" },
+        { time: "6:00 PM", title: "Ari Hipster Cafes & Dinner", location: "Phahonyothin Soi Ari", cost: 350, costCurrency: "฿", emoji: "☕" },
       ],
-      tip: "Chatuchak Market is huge (15,000+ stalls) - arrive early, wear comfortable shoes, and bring water."
+      tip: "Chatuchak has 15,000 stalls. Arrive at opening (9 AM) before heat becomes unbearable. Bring water, cash, and bargaining skills."
     },
     {
       dayNumber: 4,
+      vibeKeyword: "Ancient",
+      neighborhood: "Ayutthaya Historical Park",
       activities: [
-        { time: "7:00 AM", title: "Day Trip to Ayutthaya", location: "Ayutthaya", cost: 25, icon: Mountain },
-        { time: "12:00 PM", title: "Riverside Lunch", location: "Ayutthaya", cost: 10, icon: Utensils },
-        { time: "3:00 PM", title: "Ancient Temples Tour", location: "Ayutthaya Historical Park", cost: 8, icon: Landmark },
-        { time: "7:00 PM", title: "Return to Bangkok", location: "Phaya Thai", cost: 0, icon: Building2 },
+        { time: "7:00 AM", title: "Minivan to Ayutthaya", location: "Victory Monument Departure", cost: 120, costCurrency: "฿", emoji: "🚐" },
+        { time: "10:00 AM", title: "Wat Mahathat Buddha in Tree", location: "Ayutthaya Historical Park", cost: 50, costCurrency: "฿", emoji: "🌳" },
+        { time: "1:00 PM", title: "Riverside Grilled River Prawns", location: "Malakor Jetty Restaurant", cost: 250, costCurrency: "฿", emoji: "🦐" },
+        { time: "3:00 PM", title: "Wat Chaiwatthanaram Sunset", location: "U Thong Road, Ayutthaya", cost: 50, costCurrency: "฿", emoji: "🛕" },
       ],
-      tip: "Rent a bicycle or tuk-tuk in Ayutthaya to explore the temple ruins. It's hot - start early!"
+      tip: "Rent bicycles at Ayutthaya train station (50฿/day) to explore temple ruins. Start early - it's incredibly hot by midday."
     },
     {
       dayNumber: 5,
+      vibeKeyword: "Floating",
+      neighborhood: "Damnoen Saduak & Ratchada",
       activities: [
-        { time: "9:00 AM", title: "Floating Market Visit", location: "Damnoen Saduak", cost: 30, icon: Waves },
-        { time: "12:00 PM", title: "Boat Noodles Lunch", location: "Ratchada", cost: 5, icon: Utensils },
-        { time: "3:00 PM", title: "MBK Shopping Center", location: "Pathum Wan", cost: 25, icon: ShoppingBag },
-        { time: "7:00 PM", title: "Sky Bar Experience", location: "Silom", cost: 15, icon: Building2 },
+        { time: "6:00 AM", title: "Floating Market Boat Tour", location: "Damnoen Saduak, Ratchaburi", cost: 1000, costCurrency: "฿", emoji: "🚣" },
+        { time: "10:00 AM", title: "Coconut Sugar Farm Visit", location: "Damnoen Saduak District", cost: 100, costCurrency: "฿", emoji: "🥥" },
+        { time: "2:00 PM", title: "Talad Rot Fai Train Market", location: "Ratchadaphisek Soi 4", cost: 300, costCurrency: "฿", emoji: "🚂" },
+        { time: "7:00 PM", title: "Sky Bar at Lebua State Tower", location: "Silom, Bang Rak", cost: 500, costCurrency: "฿", emoji: "🍹" },
       ],
-      tip: "Floating markets are touristy but worth it. Go early (7-9 AM) before it gets too crowded and hot."
+      tip: "Floating markets are touristy but worth it once. Tours leave Bangkok at 6 AM - book through hostel for better prices than street touts."
     },
     {
       dayNumber: 6,
+      vibeKeyword: "Culinary",
+      neighborhood: "Thonglor & Ekkamai",
       activities: [
-        { time: "10:00 AM", title: "Lumpini Park Jog", location: "Lumpini", cost: 0, icon: TreePine },
-        { time: "12:00 PM", title: "Thai Cooking Class", location: "Silom", cost: 35, icon: Utensils },
-        { time: "4:00 PM", title: "Asiatique Night Market", location: "Bang Kho Laem", cost: 20, icon: ShoppingBag },
-        { time: "7:00 PM", title: "Riverside Dinner", location: "Asiatique", cost: 18, icon: Utensils },
+        { time: "10:00 AM", title: "Thai Cooking Class at Silom", location: "Silom Thai Cooking School", cost: 1200, costCurrency: "฿", emoji: "👨‍🍳" },
+        { time: "2:00 PM", title: "EmQuartier Mall Window Shopping", location: "Sukhumvit Road, Khlong Toei", cost: 0, costCurrency: "฿", emoji: "🏬" },
+        { time: "5:00 PM", title: "Benjakitti Park Jogging Track", location: "Ratchadaphisek Road", cost: 0, costCurrency: "฿", emoji: "🏃" },
+        { time: "7:00 PM", title: "Thonglor Soi 13 Bar Hopping", location: "Sukhumvit Soi 55", cost: 600, costCurrency: "฿", emoji: "🍺" },
       ],
-      tip: "Thai cooking classes are affordable and fun. You'll learn to make 4-6 dishes you can recreate at home."
+      tip: "Thai cooking classes teach 4-6 dishes you can replicate. Market tour included. Book in advance - popular classes fill up fast."
     },
     {
       dayNumber: 7,
+      vibeKeyword: "Farewell",
+      neighborhood: "Asiatique & Riverside",
       activities: [
-        { time: "10:00 AM", title: "Last-minute Shopping", location: "Siam Paragon", cost: 30, icon: ShoppingBag },
-        { time: "1:00 PM", title: "Farewell Lunch", location: "CentralWorld", cost: 15, icon: Utensils },
-        { time: "3:00 PM", title: "Traditional Thai Massage", location: "Sukhumvit", cost: 20, icon: Heart },
-        { time: "6:00 PM", title: "Final Pad Thai", location: "Thong Lor", cost: 8, icon: Utensils },
+        { time: "11:00 AM", title: "Wat Arun White Temple Climb", location: "Arun Amarin Road, Bangkok Yai", cost: 100, costCurrency: "฿", emoji: "⛪" },
+        { time: "1:00 PM", title: "Supanniga Eating Room", location: "Thonglor Soi 8", cost: 400, costCurrency: "฿", emoji: "🍽️" },
+        { time: "4:00 PM", title: "Traditional Thai Massage", location: "Wat Pho Massage School", cost: 420, costCurrency: "฿", emoji: "💆" },
+        { time: "7:00 PM", title: "Asiatique Night Market Ferris Wheel", location: "Charoen Krung Road", cost: 300, costCurrency: "฿", emoji: "🎡" },
       ],
-      tip: "Get a traditional Thai massage before you leave - it's affordable and a perfect way to relax before your flight."
+      tip: "Wat Pho massage school offers authentic Thai massage at half the price of spas. Book last slot (4 PM) to relax before flight."
     }
   ];
 
@@ -373,63 +434,75 @@ const generateSingaporeItinerary = (days: number): DayItinerary[] => {
   const baseItinerary: DayItinerary[] = [
     {
       dayNumber: 2,
+      vibeKeyword: "Futuristic",
+      neighborhood: "Marina Bay & Gardens",
       activities: [
-        { time: "9:00 AM", title: "Gardens by the Bay", location: "Marina Bay", cost: 28, icon: TreePine },
-        { time: "12:00 PM", title: "Hawker Center Lunch", location: "Maxwell Food Centre", cost: 8, icon: Utensils },
-        { time: "2:30 PM", title: "Marina Bay Sands SkyPark", location: "Marina Bay", cost: 26, icon: Building2 },
-        { time: "6:00 PM", title: "Evening at Clarke Quay", location: "Clarke Quay", cost: 25, icon: Utensils },
+        { time: "9:00 AM", title: "Gardens by the Bay Cloud Forest", location: "18 Marina Gardens Drive", cost: 28, costCurrency: "S$", emoji: "🌿" },
+        { time: "12:00 PM", title: "Maxwell Food Centre Hainanese Chicken", location: "1 Kadayanallur Street", cost: 6, costCurrency: "S$", emoji: "🍗" },
+        { time: "2:00 PM", title: "Marina Bay Sands SkyPark", location: "10 Bayfront Avenue", cost: 26, costCurrency: "S$", emoji: "🏙️" },
+        { time: "7:00 PM", title: "Supertree Grove Light Show", location: "Gardens by the Bay", cost: 0, costCurrency: "S$", emoji: "🌳" },
       ],
-      tip: "Download the MyTransport app for real-time public transport directions. Singapore's system is incredibly efficient."
+      tip: "Download MyTransport.SG app for real-time MRT directions. Singapore's public transport is world-class efficient."
     },
     {
       dayNumber: 3,
+      vibeKeyword: "Heritage",
+      neighborhood: "Chinatown & Little India",
       activities: [
-        { time: "9:00 AM", title: "Chinatown Exploration", location: "Chinatown", cost: 0, icon: Camera },
-        { time: "11:00 AM", title: "Buddha Tooth Relic Temple", location: "Chinatown", cost: 0, icon: Landmark },
-        { time: "1:00 PM", title: "Lunch at Chinatown Complex", location: "Chinatown", cost: 6, icon: Utensils },
-        { time: "4:00 PM", title: "Little India Visit", location: "Little India", cost: 10, icon: ShoppingBag },
+        { time: "9:00 AM", title: "Buddha Tooth Relic Temple", location: "288 South Bridge Road", cost: 0, costCurrency: "S$", emoji: "🛕" },
+        { time: "11:00 AM", title: "Chinatown Complex Hawker", location: "335 Smith Street", cost: 5, costCurrency: "S$", emoji: "🍜" },
+        { time: "2:00 PM", title: "Sri Veeramakaliamman Temple", location: "141 Serangoon Road", cost: 0, costCurrency: "S$", emoji: "🕉️" },
+        { time: "5:00 PM", title: "Tekka Centre Prata Dinner", location: "665 Buffalo Road", cost: 8, costCurrency: "S$", emoji: "🫓" },
       ],
-      tip: "Hawker centers offer incredible food at low prices. Don't miss chicken rice, laksa, and satay!"
+      tip: "Hawker centers are Singapore's soul. Must-try: chicken rice, laksa, char kway teow. Never more than S$8 per meal."
     },
     {
       dayNumber: 4,
+      vibeKeyword: "Beach",
+      neighborhood: "Sentosa Island",
       activities: [
-        { time: "9:00 AM", title: "Sentosa Island Day Trip", location: "Sentosa", cost: 45, icon: Waves },
-        { time: "12:00 PM", title: "Beach Club Lunch", location: "Siloso Beach", cost: 22, icon: Utensils },
-        { time: "3:00 PM", title: "S.E.A. Aquarium", location: "Resorts World", cost: 34, icon: Waves },
-        { time: "7:00 PM", title: "Wings of Time Show", location: "Sentosa", cost: 18, icon: Music },
+        { time: "9:00 AM", title: "Sentosa Express to Beach Station", location: "VivoCity Level 3", cost: 4, costCurrency: "S$", emoji: "🚝" },
+        { time: "10:00 AM", title: "Siloso Beach Morning Swim", location: "Siloso Beach Walk", cost: 0, costCurrency: "S$", emoji: "🏖️" },
+        { time: "1:00 PM", title: "S.E.A. Aquarium Ocean Dome", location: "8 Sentosa Gateway", cost: 34, costCurrency: "S$", emoji: "🐠" },
+        { time: "7:00 PM", title: "Wings of Time Water Show", location: "Siloso Beach", cost: 18, costCurrency: "S$", emoji: "🎆" },
       ],
-      tip: "Buy a Sentosa Fun Pass for better value if visiting multiple attractions. The island has great beaches!"
+      tip: "Buy Sentosa Fun Pass online for better value. Island has free beach access - just pay monorail entry."
     },
     {
       dayNumber: 5,
+      vibeKeyword: "Wildlife",
+      neighborhood: "Mandai & Orchard",
       activities: [
-        { time: "10:00 AM", title: "Singapore Zoo", location: "Mandai", cost: 39, icon: TreePine },
-        { time: "1:00 PM", title: "Zoo Lunch", location: "Mandai", cost: 15, icon: Utensils },
-        { time: "3:00 PM", title: "Orchard Road Shopping", location: "Orchard", cost: 40, icon: ShoppingBag },
-        { time: "6:30 PM", title: "Dinner at ION Sky", location: "Orchard", cost: 30, icon: Building2 },
+        { time: "9:00 AM", title: "Singapore Zoo Open Habitat", location: "80 Mandai Lake Road", cost: 39, costCurrency: "S$", emoji: "🦁" },
+        { time: "1:00 PM", title: "Ah Meng Restaurant Zoo Lunch", location: "Singapore Zoo", cost: 15, costCurrency: "S$", emoji: "🍱" },
+        { time: "3:00 PM", title: "Orchard Road ION Sky Free Observatory", location: "2 Orchard Turn Level 56", cost: 0, costCurrency: "S$", emoji: "🏙️" },
+        { time: "6:00 PM", title: "Newton Food Centre Chili Crab", location: "500 Clemenceau Avenue North", cost: 40, costCurrency: "S$", emoji: "🦀" },
       ],
-      tip: "Singapore Zoo is world-class with open habitats. Go early to beat the heat and see animals most active."
+      tip: "Singapore Zoo is world-class. River Wonders and Night Safari are adjacent - combo tickets save money if doing multiple."
     },
     {
       dayNumber: 6,
+      vibeKeyword: "Eclectic",
+      neighborhood: "Kampong Glam & City Hall",
       activities: [
-        { time: "9:00 AM", title: "Arab Street & Haji Lane", location: "Kampong Glam", cost: 15, icon: Camera },
-        { time: "12:00 PM", title: "Malay Cuisine Lunch", location: "Kampong Glam", cost: 12, icon: Utensils },
-        { time: "3:00 PM", title: "National Gallery Singapore", location: "City Hall", cost: 20, icon: Palette },
-        { time: "7:00 PM", title: "Supertree Light Show", location: "Gardens by the Bay", cost: 0, icon: Music },
+        { time: "9:00 AM", title: "Sultan Mosque Golden Dome", location: "3 Muscat Street", cost: 0, costCurrency: "S$", emoji: "🕌" },
+        { time: "11:00 AM", title: "Haji Lane Instagram Murals", location: "Haji Lane, Kampong Glam", cost: 0, costCurrency: "S$", emoji: "🎨" },
+        { time: "1:00 PM", title: "Zam Zam Murtabak Lunch", location: "697-699 North Bridge Road", cost: 10, costCurrency: "S$", emoji: "🥙" },
+        { time: "3:00 PM", title: "National Gallery Singapore Art", location: "1 St Andrew's Road", cost: 20, costCurrency: "S$", emoji: "🖼️" },
       ],
-      tip: "The Supertree Grove light show at Gardens by the Bay is free and runs twice nightly. Magical experience!"
+      tip: "Haji Lane has the most Instagrammable street art. Go early before crowds. Nearby Arab Street has great fabric and carpet shops."
     },
     {
       dayNumber: 7,
+      vibeKeyword: "Farewell",
+      neighborhood: "Katong & Marina Bay",
       activities: [
-        { time: "10:00 AM", title: "Final Shopping", location: "VivoCity", cost: 35, icon: ShoppingBag },
-        { time: "1:00 PM", title: "Laksa Lunch", location: "Katong", cost: 10, icon: Utensils },
-        { time: "3:00 PM", title: "Singapore Flyer Ride", location: "Marina Bay", cost: 33, icon: Building2 },
-        { time: "6:00 PM", title: "Farewell Dinner", location: "Boat Quay", cost: 40, icon: Heart },
+        { time: "10:00 AM", title: "Katong Peranakan Shophouses", location: "Joo Chiat Road, Katong", cost: 0, costCurrency: "S$", emoji: "🏠" },
+        { time: "12:00 PM", title: "328 Katong Laksa Final Meal", location: "51 East Coast Road", cost: 8, costCurrency: "S$", emoji: "🍜" },
+        { time: "3:00 PM", title: "Singapore Flyer Observation Wheel", location: "30 Raffles Avenue", cost: 33, costCurrency: "S$", emoji: "🎡" },
+        { time: "6:00 PM", title: "Lau Pa Sat Satay Street Sunset", location: "18 Raffles Quay", cost: 15, costCurrency: "S$", emoji: "�串串" },
       ],
-      tip: "Bring home bak kwa (BBQ pork), kaya (coconut jam), and local tea as souvenirs from Singapore."
+      tip: "Bring home kaya (coconut jam), bak kwa (BBQ pork), and TWG tea. Changi Airport has best duty-free prices for these."
     }
   ];
 
@@ -440,63 +513,75 @@ const generateGenericItinerary = (days: number, destination: string): DayItinera
   const genericDays: DayItinerary[] = [
     {
       dayNumber: 2,
+      vibeKeyword: "Heritage",
+      neighborhood: "Historic Center",
       activities: [
-        { time: "9:00 AM", title: "Historical Landmark Visit", location: "City Center", cost: 20, icon: Landmark },
-        { time: "12:00 PM", title: "Local Cuisine Lunch", location: "Popular District", cost: 15, icon: Utensils },
-        { time: "2:30 PM", title: "Museum or Gallery Tour", location: "Cultural Quarter", cost: 12, icon: Palette },
-        { time: "6:00 PM", title: "Dinner at Local Restaurant", location: "Downtown", cost: 25, icon: Utensils },
+        { time: "9:00 AM", title: "Main Historical Landmark", location: "Old Town District", cost: 20, costCurrency: "$", emoji: "🏛️" },
+        { time: "12:00 PM", title: "Traditional Local Lunch", location: "Central Food Quarter", cost: 15, costCurrency: "$", emoji: "🍽️" },
+        { time: "2:30 PM", title: "City Museum Visit", location: "Museum District", cost: 12, costCurrency: "$", emoji: "🎨" },
+        { time: "6:00 PM", title: "Authentic Local Dinner", location: "Popular Restaurant Row", cost: 25, costCurrency: "$", emoji: "🥘" },
       ],
-      tip: "Research local customs and basic phrases in the local language. A little effort goes a long way with locals."
+      tip: "Research key phrases in the local language. Knowing 'hello', 'thank you', and 'where is' goes a long way with locals."
     },
     {
       dayNumber: 3,
+      vibeKeyword: "Market",
+      neighborhood: "Local Markets Area",
       activities: [
-        { time: "8:30 AM", title: "Morning Market Visit", location: "Central Market", cost: 10, icon: ShoppingBag },
-        { time: "11:00 AM", title: "Religious or Cultural Site", location: "Historic District", cost: 5, icon: Landmark },
-        { time: "1:00 PM", title: "Street Food Sampling", location: "Food Street", cost: 12, icon: Utensils },
-        { time: "4:00 PM", title: "Walking Tour", location: "Old Town", cost: 15, icon: Camera },
+        { time: "8:00 AM", title: "Morning Market Exploration", location: "Central Market Hall", cost: 10, costCurrency: "$", emoji: "🛒" },
+        { time: "11:00 AM", title: "Religious Landmark Visit", location: "Sacred District", cost: 5, costCurrency: "$", emoji: "⛪" },
+        { time: "1:00 PM", title: "Street Food Tour", location: "Food Street Area", cost: 12, costCurrency: "$", emoji: "🍜" },
+        { time: "4:00 PM", title: "Walking Tour Old Town", location: "Historic Quarter", cost: 15, costCurrency: "$", emoji: "🚶" },
       ],
-      tip: "Join free walking tours to meet other solo travelers and learn hidden gems from local guides."
+      tip: "Join free walking tours to meet other solo travelers. Guides work for tips and share insider knowledge."
     },
     {
       dayNumber: 4,
+      vibeKeyword: "Adventure",
+      neighborhood: "Day Trip Destination",
       activities: [
-        { time: "7:00 AM", title: "Day Trip Adventure", location: `Near ${destination}`, cost: 35, icon: Mountain },
-        { time: "12:00 PM", title: "Lunch at Day Trip Location", location: "Countryside", cost: 18, icon: Utensils },
-        { time: "3:00 PM", title: "Natural Attraction Visit", location: "Scenic Area", cost: 10, icon: TreePine },
-        { time: "7:00 PM", title: "Return to City", location: "City Center", cost: 0, icon: Building2 },
+        { time: "7:00 AM", title: "Day Trip Departure", location: `Near ${destination}`, cost: 25, costCurrency: "$", emoji: "🚌" },
+        { time: "10:00 AM", title: "Natural Wonder Visit", location: "Scenic Viewpoint", cost: 15, costCurrency: "$", emoji: "🏞️" },
+        { time: "1:00 PM", title: "Regional Cuisine Lunch", location: "Local Village", cost: 18, costCurrency: "$", emoji: "🥙" },
+        { time: "4:00 PM", title: "Outdoor Activity", location: "Nature Reserve", cost: 20, costCurrency: "$", emoji: "🥾" },
       ],
-      tip: "Book day trips through your hotel or hostel. They often have better local knowledge and competitive prices."
+      tip: "Book day trips through your accommodation. They often have better rates and local connections than online booking sites."
     },
     {
       dayNumber: 5,
+      vibeKeyword: "Shopping",
+      neighborhood: "Commercial District",
       activities: [
-        { time: "9:30 AM", title: "Shopping District Exploration", location: "Main Shopping Area", cost: 25, icon: ShoppingBag },
-        { time: "12:30 PM", title: "Café Lunch Break", location: "Trendy Neighborhood", cost: 14, icon: Coffee },
-        { time: "3:00 PM", title: "Viewpoint or Observation Deck", location: "Tallest Building", cost: 20, icon: Building2 },
-        { time: "6:00 PM", title: "Evening Entertainment", location: "Entertainment District", cost: 30, icon: Music },
+        { time: "10:00 AM", title: "Shopping District Stroll", location: "Main Shopping Street", cost: 30, costCurrency: "$", emoji: "🛍️" },
+        { time: "1:00 PM", title: "Trendy Cafe Lunch", location: "Hipster Neighborhood", cost: 16, costCurrency: "$", emoji: "☕" },
+        { time: "3:00 PM", title: "Viewpoint or Tower", location: "Tallest Building", cost: 20, costCurrency: "$", emoji: "🏙️" },
+        { time: "7:00 PM", title: "Evening Entertainment", location: "Nightlife District", cost: 30, costCurrency: "$", emoji: "🎭" },
       ],
-      tip: "Visit viewpoints at sunset for the best photos. The city looks magical when lights start coming on."
+      tip: "Visit observation decks at sunset for dramatic lighting. Book tickets online in advance to skip ticket counter lines."
     },
     {
       dayNumber: 6,
+      vibeKeyword: "Local Life",
+      neighborhood: "Residential Quarter",
       activities: [
-        { time: "10:00 AM", title: "Neighborhood Exploration", location: "Local District", cost: 0, icon: Camera },
-        { time: "1:00 PM", title: "Traditional Meal Experience", location: "Local Restaurant", cost: 22, icon: Utensils },
-        { time: "3:30 PM", title: "Park or Garden Visit", location: "City Park", cost: 5, icon: TreePine },
-        { time: "6:30 PM", title: "Waterfront Evening", location: "Harbor/River Area", cost: 20, icon: Waves },
+        { time: "9:00 AM", title: "Neighborhood Exploration", location: "Local District", cost: 0, costCurrency: "$", emoji: "🏘️" },
+        { time: "12:00 PM", title: "Family-Run Restaurant", location: "Residential Area", cost: 18, costCurrency: "$", emoji: "🍲" },
+        { time: "3:00 PM", title: "Park or Garden Visit", location: "City Green Space", cost: 5, costCurrency: "$", emoji: "🌳" },
+        { time: "6:00 PM", title: "Waterfront Evening", location: "Harbor or River Walk", cost: 20, costCurrency: "$", emoji: "🌅" },
       ],
-      tip: "Explore residential neighborhoods to see authentic daily life. Some of the best food is away from tourist areas."
+      tip: "Best authentic food is in residential neighborhoods away from tourist zones. Look for places packed with locals."
     },
     {
       dayNumber: 7,
+      vibeKeyword: "Farewell",
+      neighborhood: "Souvenir District",
       activities: [
-        { time: "10:00 AM", title: "Souvenir Shopping", location: "Gift Shops", cost: 35, icon: ShoppingBag },
-        { time: "1:00 PM", title: "Final Local Meal", location: "Favorite Spot", cost: 20, icon: Utensils },
-        { time: "3:00 PM", title: "Last Sightseeing Stop", location: "Must-See Spot", cost: 15, icon: Camera },
-        { time: "6:00 PM", title: "Farewell Dinner", location: "Special Restaurant", cost: 40, icon: Heart },
+        { time: "10:00 AM", title: "Souvenir Shopping", location: "Craft Markets", cost: 35, costCurrency: "$", emoji: "🎁" },
+        { time: "1:00 PM", title: "Favorite Dish Revisit", location: "Best Restaurant", cost: 20, costCurrency: "$", emoji: "❤️" },
+        { time: "3:00 PM", title: "Final Photo Stop", location: "Iconic Landmark", cost: 10, costCurrency: "$", emoji: "📸" },
+        { time: "6:00 PM", title: "Farewell Sunset Dinner", location: "Scenic Restaurant", cost: 40, costCurrency: "$", emoji: "🌆" },
       ],
-      tip: "Pack light souvenirs and leave room in your bag. Take lots of photos but also remember to be present in the moment."
+      tip: "Leave buffer time before your flight. Take photos but be present. The best souvenir is the memory of your solo adventure."
     }
   ];
 
