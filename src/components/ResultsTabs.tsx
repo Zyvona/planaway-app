@@ -5,6 +5,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ActivityOptions, { ActivityOption } from "@/components/ActivityOptions";
 import { toast } from "sonner";
 import { saveTrip } from "@/lib/supabase";
+import { Home } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 
 interface ResultsTabsProps {
   origin: string;
@@ -39,6 +42,9 @@ const SkeletonBlock = () => (
     <SkeletonCard lines={3} />
   </div>
 );
+
+// Inside the component:
+const navigate = useNavigate();
 
 const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinationCoords, loadedTripData, onDataUpdate }: ResultsTabsProps) => {
   const [itineraryData, setItineraryData] = useState<any>(null);
@@ -234,6 +240,13 @@ const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinat
   };
 
   return (
+     <Button
+    variant="ghost"
+    size="icon"
+    onClick={() => navigate("/")}
+    className="h-12 w-12 rounded-none border-r border-border hover:bg-muted/50 text-[#1A3A5C]">
+    <Home className="h-5 w-5" />
+  </Button>
     <Tabs defaultValue="itinerary" className="flex flex-col h-full">
       <TabsList className="grid w-full grid-cols-3 bg-card rounded-none border-b border-border h-13 p-0">
         <TabsTrigger
