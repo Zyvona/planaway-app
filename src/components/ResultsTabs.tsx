@@ -263,18 +263,6 @@ const ResultsTabs = ({ origin, destination, budget, days, originCoords, destinat
         <h3 className="font-heading font-bold text-foreground mb-0.5">Daily Itinerary</h3>
         <p className="text-muted-foreground text-xs mb-5">Your personalized day-by-day plan</p>
 
-        <VibeChips
-          selectedVibes={selectedVibes}
-          onVibeToggle={handleVibeToggle}
-          isRefining={isRefining}
-        />
-
-        {isRefining && (
-          <div className="flex items-center gap-2 mb-4 text-secondary text-sm font-heading">
-            <Sparkles className="h-4 w-4 animate-pulse" />
-            <span>Refining your itinerary...</span>
-          </div>
-        )}
 
         <div className="flex items-center gap-2 mb-4">
           <div className="flex-1 h-px bg-border" />
