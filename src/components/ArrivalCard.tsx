@@ -1,4 +1,4 @@
-import { Plane, Home, Info, ArrowRight } from "lucide-react";
+import { Plane, Chrome as Home, Info, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
