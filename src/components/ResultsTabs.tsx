@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarDays, DollarSign, ShieldCheck, Sparkles, Home } from "lucide-react";
+import { CalendarDays, DollarSign, ShieldCheck, Sparkles, Chrome as Home } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import ActivityOptions from "@/components/ActivityOptions";
 import { Button } from "@/components/ui/button"; // Added missing import
