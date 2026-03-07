@@ -20,34 +20,35 @@ const App = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const envCheck = checkRequiredEnvVars();
-
-  const [user, setUser] = useState<any>(null);
-const [authLoading, setAuthLoading] = useState(true);
-
+    
 useEffect(() => {
-  // Check active session immediately
-  const initAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+  // Get initial session
+  supabase.auth.getSession().then(({ data: { session } }) => {
     setUser(session?.user ?? null);
-    setAuthLoading(false);
-  };
+    setLoading(false);
+  });
 
-  initAuth();
-
-  // Listen for changes (Sign In / Sign Out)
+  // Listen for changes
   const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // FORCE a state update on every change event
     setUser(session?.user ?? null);
-    setAuthLoading(false);
+    if (!session) setLoading(false); 
   });
 
   return () => subscription.unsubscribe();
 }, []);
 
-if (authLoading) return <div className="h-screen bg-[#FDFBF7] flex items-center justify-center">Loading...</div>;
+  if (!envCheck.isValid) {
+    return <EnvErrorDisplay missingVars={envCheck.missingVars} />;
+  }
 
-// Only show onboarding if user is explicitly authenticated
-return user ? <OnboardingForm /> : <LoginView />;
-
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-primary">
+        <div className="h-8 w-8 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
