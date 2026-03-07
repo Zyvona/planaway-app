@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { Compass, LogIn } from "lucide-react";
+import { Compass, LogIn, Apple } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { signInWithGoogle } from "@/lib/supabase";
 import { toast } from "sonner";
 import heroBg from "@/assets/hero-bg.jpg";
@@ -65,6 +66,23 @@ export default function Auth() {
             <LogIn className="h-5 w-5 mr-2" />
             Sign in with Google
           </Button>
+
+          <div className="relative mt-4">
+            <Button
+              disabled
+              size="lg"
+              className="w-full bg-muted/50 text-muted-foreground hover:bg-muted/50 opacity-60 cursor-not-allowed"
+            >
+              <Apple className="h-5 w-5 mr-2" />
+              Sign in with Apple
+            </Button>
+            <Badge
+              variant="secondary"
+              className="absolute -top-2 -right-2 bg-accent/20 text-accent border-accent/30 text-xs font-heading font-bold"
+            >
+              Coming Soon
+            </Badge>
+          </div>
 
           <div className="mt-6 space-y-3 text-center text-xs text-muted-foreground">
             <p>Sign in to access your personalized itineraries</p>
