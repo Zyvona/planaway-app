@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
 
     // Updated to Gemini 3 Flash for speed and reliability
     const geminiResponse = await fetch(
-  `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent?key=${geminiApiKey}`,
+  `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${geminiApiKey}`,
   {
     method: "POST",
     headers: { "Content-Type": "application/json" },
