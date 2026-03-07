@@ -82,6 +82,10 @@ export async function signInWithGoogle() {
     provider: 'google',
     options: {
       redirectTo: window.location.origin,
+      queryParams: {
+        prompt: 'select_account', // This forces Google to show the account picker every time
+        access_type: 'offline',
+      }
     },
   });
   if (error) {
