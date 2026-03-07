@@ -74,8 +74,8 @@ const ArrivalCard = ({ origin, destination }: ArrivalCardProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div>
-          <h4 className="font-heading font-semibold text-sm mb-2 text-foreground flex items-center gap-2">
+        <div className="p-5">
+          <h4 className="font-heading font-bold text-sm mb-2 text-foreground flex items-center gap-2">
             <Plane className="h-4 w-4 text-accent" />
             Getting to Your Hotel
           </h4>
@@ -84,10 +84,10 @@ const ArrivalCard = ({ origin, destination }: ArrivalCardProps) => {
           </p>
         </div>
 
-        <div className="rounded-lg p-4 space-y-3" style={{ backgroundColor: '#EAF0F8' }}>
+        <div className="rounded-lg p-5 space-y-3" style={{ backgroundColor: '#EAF0F8' }}>
           <div className="flex items-center gap-2">
             <Home className="h-5 w-5 text-primary" />
-            <h4 className="font-heading font-semibold text-sm text-foreground">
+            <h4 className="font-heading font-bold text-sm text-foreground">
               Check-in at Hotel
             </h4>
           </div>
@@ -96,10 +96,10 @@ const ArrivalCard = ({ origin, destination }: ArrivalCardProps) => {
           </p>
         </div>
 
-        <Alert className="bg-accent/10 border-accent/30">
+        <Alert className="bg-accent/10 border-accent/30 p-5">
           <Info className="h-4 w-4 text-accent" />
           <AlertDescription className="text-sm">
-            <div className="font-semibold mb-1 text-foreground">Solo Arrival Tips</div>
+            <div className="font-bold mb-1 text-foreground">Solo Arrival Tips</div>
             <ul className="space-y-1 text-muted-foreground">
               <li>• {advice.simCard}</li>
               <li>• {advice.tip}</li>
