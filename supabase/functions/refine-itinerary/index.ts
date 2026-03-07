@@ -97,7 +97,7 @@ Return ONLY the updated itinerary_data structure:
 Make the activities specific to ${destination}, realistic for ${currentYear}, and aligned with the vibes: ${vibesList}.`;
 
     const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${geminiApiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${geminiApiKey}`,
       {
         method: "POST",
         headers: {
