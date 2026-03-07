@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import ArrivalCard from "@/components/ArrivalCard";
 import DayCard from "@/components/DayCard";
 import { generateItinerary } from "@/lib/itinerary-generator";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 
 const SkeletonCard = ({ lines = 3 }: { lines?: number }) => (
   <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
@@ -34,36 +34,11 @@ interface ResultsTabsProps {
 const ResultsTabs = ({ origin, destination, days, budget }: ResultsTabsProps) => {
   const totalDays = days ? parseInt(days) : 7;
   const itinerary = destination ? generateItinerary(destination, totalDays) : [];
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const dayRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const [selectedDay, setSelectedDay] = useState<number>(1);
 
-  const scrollToDay = (dayNumber: number) => {
-    setSelectedDay(dayNumber);
-    const element = dayRefs.current[dayNumber];
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const dayNum = parseInt(entry.target.getAttribute('data-day') || '0');
-            setSelectedDay(dayNum);
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-
-    Object.values(dayRefs.current).forEach((ref) => {
-      if (ref) observer.observe(ref);
-    });
-
-    return () => observer.disconnect();
-  }, [itinerary]);
+  const currentDayContent = selectedDay === 1
+    ? { type: 'arrival' as const }
+    : { type: 'day' as const, day: itinerary.find(day => day.dayNumber === selectedDay) };
 
   return (
     <Tabs defaultValue="itinerary" className="flex flex-col h-full">
@@ -91,68 +66,64 @@ const ResultsTabs = ({ origin, destination, days, budget }: ResultsTabsProps) =>
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="itinerary" className="flex-1 p-5 mt-0 overflow-y-auto">
-        <h3 className="font-heading font-bold text-foreground mb-0.5">Daily Itinerary</h3>
-        <p className="text-muted-foreground text-xs mb-5">Your personalized day-by-day plan</p>
-        <div className="flex items-center gap-2 mb-6">
-          <div className="flex-1 h-px bg-border" />
-          <div className="h-2 w-2 rotate-45 bg-accent" />
-          <div className="flex-1 h-px bg-border" />
+      <TabsContent value="itinerary" className="flex-1 flex flex-col mt-0 overflow-hidden">
+        <div className="px-5 pt-5 pb-3">
+          <h3 className="font-heading font-bold text-foreground mb-0.5">Daily Itinerary</h3>
+          <p className="text-muted-foreground text-xs mb-5">Your personalized day-by-day plan</p>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="flex-1 h-px bg-border" />
+            <div className="h-2 w-2 rotate-45 bg-accent" />
+            <div className="flex-1 h-px bg-border" />
+          </div>
         </div>
 
-        {origin && destination ? (
-          <div className="space-y-6">
-            <ScrollArea className="w-full mb-6">
-              <div className="flex gap-2 pb-3">
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 px-5 pb-4 border-b border-border/50">
+          <ScrollArea className="w-full">
+            <div className="flex gap-2 pb-3">
+              <Button
+                variant={selectedDay === 1 ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedDay(1)}
+                className="font-heading font-semibold whitespace-nowrap"
+              >
+                Day 1
+              </Button>
+              {itinerary.map((day) => (
                 <Button
-                  variant={selectedDay === 1 ? "default" : "outline"}
+                  key={day.dayNumber}
+                  variant={selectedDay === day.dayNumber ? "default" : "outline"}
                   size="sm"
-                  onClick={() => scrollToDay(1)}
+                  onClick={() => setSelectedDay(day.dayNumber)}
                   className="font-heading font-semibold whitespace-nowrap"
                 >
-                  Day 1
+                  Day {day.dayNumber}
                 </Button>
-                {itinerary.map((day) => (
-                  <Button
-                    key={day.dayNumber}
-                    variant={selectedDay === day.dayNumber ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => scrollToDay(day.dayNumber)}
-                    className="font-heading font-semibold whitespace-nowrap"
-                  >
-                    Day {day.dayNumber}
-                  </Button>
-                ))}
-              </div>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-
-            <div
-              ref={(el) => { dayRefs.current[1] = el; }}
-              data-day="1"
-            >
-              <ArrivalCard origin={origin} destination={destination} />
+              ))}
             </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </div>
 
-            {itinerary.map((day) => (
-              <div
-                key={day.dayNumber}
-                ref={(el) => { dayRefs.current[day.dayNumber] = el; }}
-                data-day={day.dayNumber}
-              >
+        <div className="flex-1 overflow-y-auto px-5 py-6">
+          {origin && destination ? (
+            <div>
+              {currentDayContent.type === 'arrival' && (
+                <ArrivalCard origin={origin} destination={destination} />
+              )}
+              {currentDayContent.type === 'day' && currentDayContent.day && (
                 <DayCard
-                  dayNumber={day.dayNumber}
-                  vibeKeyword={day.vibeKeyword}
-                  neighborhood={day.neighborhood}
-                  activities={day.activities}
-                  tip={day.tip}
+                  dayNumber={currentDayContent.day.dayNumber}
+                  vibeKeyword={currentDayContent.day.vibeKeyword}
+                  neighborhood={currentDayContent.day.neighborhood}
+                  activities={currentDayContent.day.activities}
+                  tip={currentDayContent.day.tip}
                 />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <SkeletonBlock />
-        )}
+              )}
+            </div>
+          ) : (
+            <SkeletonBlock />
+          )}
+        </div>
       </TabsContent>
 
       <TabsContent value="budget" className="flex-1 p-5 mt-0">
