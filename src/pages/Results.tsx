@@ -78,7 +78,12 @@ const Results = () => {
         transition={{ delay: 0.2 }}
         className="relative z-10 flex-1 rounded-t-2xl bg-card shadow-2xl shadow-primary/30 overflow-hidden"
       >
-        <ResultsTabs />
+        <ResultsTabs
+          origin={data.origin}
+          destination={data.destination}
+          days={data.days}
+          budget={data.budget}
+        />
       </motion.div>
     </div>
   );

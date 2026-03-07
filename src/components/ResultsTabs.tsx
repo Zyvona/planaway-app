@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDays, DollarSign, ShieldCheck } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import ArrivalCard from "@/components/ArrivalCard";
 
 const SkeletonCard = ({ lines = 3 }: { lines?: number }) => (
   <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
@@ -18,7 +19,14 @@ const SkeletonBlock = () => (
   </div>
 );
 
-const ResultsTabs = () => {
+interface ResultsTabsProps {
+  origin?: string;
+  destination?: string;
+  days?: string;
+  budget?: string;
+}
+
+const ResultsTabs = ({ origin, destination, days, budget }: ResultsTabsProps) => {
   return (
     <Tabs defaultValue="itinerary" className="flex flex-col h-full">
       <TabsList className="grid w-full grid-cols-3 bg-card rounded-none border-b border-border h-13 p-0">
@@ -45,15 +53,29 @@ const ResultsTabs = () => {
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="itinerary" className="flex-1 p-5 mt-0">
+      <TabsContent value="itinerary" className="flex-1 p-5 mt-0 overflow-y-auto">
         <h3 className="font-heading font-bold text-foreground mb-0.5">Daily Itinerary</h3>
         <p className="text-muted-foreground text-xs mb-5">Your personalized day-by-day plan</p>
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-6">
           <div className="flex-1 h-px bg-border" />
           <div className="h-2 w-2 rotate-45 bg-accent" />
           <div className="flex-1 h-px bg-border" />
         </div>
-        <SkeletonBlock />
+
+        {origin && destination ? (
+          <div className="space-y-6">
+            <ArrivalCard origin={origin} destination={destination} />
+
+            <div className="space-y-4">
+              <h4 className="font-heading font-semibold text-sm text-muted-foreground">
+                Days 2-{days || '7'}
+              </h4>
+              <SkeletonBlock />
+            </div>
+          </div>
+        ) : (
+          <SkeletonBlock />
+        )}
       </TabsContent>
 
       <TabsContent value="budget" className="flex-1 p-5 mt-0">
