@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import heroBg from "@/assets/hero-bg.jpg";
 
+
 const MyExpeditions = () => {
   const navigate = useNavigate();
   const [trips, setTrips] = useState<Trip[]>([]);
