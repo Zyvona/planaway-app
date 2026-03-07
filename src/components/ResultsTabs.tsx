@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDays, DollarSign, ShieldCheck, Sparkles } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import VibeChips from "@/components/VibeChips";
 import ActivityOptions, { ActivityOption } from "@/components/ActivityOptions";
 import { toast } from "sonner";
 import { saveTrip } from "@/lib/supabase";
