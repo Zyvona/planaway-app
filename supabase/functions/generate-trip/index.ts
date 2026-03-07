@@ -42,16 +42,20 @@ Deno.serve(async (req) => {
 
     // Updated to Gemini 3 Flash for speed and reliability
     const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent?key=${geminiApiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { response_mime_type: "application/json" } // Force JSON output
-        }),
+  `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent?key=${geminiApiKey}`,
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { 
+        response_mime_type: "application/json", // This is the key feature of Gemini 3 Flash
+        temperature: 0.7 
       }
-    );
+    }),
+  }
+);
+
 
     if (!geminiResponse.ok) throw new Error(`Gemini Error: ${geminiResponse.statusText}`);
 
