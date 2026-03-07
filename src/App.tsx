@@ -21,32 +21,33 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const envCheck = checkRequiredEnvVars();
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+  const [user, setUser] = useState<any>(null);
+const [authLoading, setAuthLoading] = useState(true);
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
+useEffect(() => {
+  // Check active session immediately
+  const initAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    setUser(session?.user ?? null);
+    setAuthLoading(false);
+  };
 
-    return () => subscription.unsubscribe();
-  }, []);
+  initAuth();
 
-  if (!envCheck.isValid) {
-    return <EnvErrorDisplay missingVars={envCheck.missingVars} />;
-  }
+  // Listen for changes (Sign In / Sign Out)
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    setUser(session?.user ?? null);
+    setAuthLoading(false);
+  });
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-primary">
-        <div className="h-8 w-8 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
-      </div>
-    );
-  }
+  return () => subscription.unsubscribe();
+}, []);
+
+if (authLoading) return <div className="h-screen bg-[#FDFBF7] flex items-center justify-center">Loading...</div>;
+
+// Only show onboarding if user is explicitly authenticated
+return user ? <OnboardingForm /> : <LoginView />;
+
 
   return (
     <QueryClientProvider client={queryClient}>
